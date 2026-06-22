@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "drizzle:push": "drizzle-kit push"
   },
   "keywords": [],
   "author": "Delfi-CH <delfi@delfi.dev>",
@@ -26,6 +27,8 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
-    "pg": "^8.22.0"
+    "express": "^5.2.1",
+    "pg": "^8.22.0",
+    "ws": "^8.21.0"
   }
 }
