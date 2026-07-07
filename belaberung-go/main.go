@@ -1,27 +1,29 @@
 package main
 
 import (
-	"fmt"
-	"github.com/go-pg/pg/v10"
-    "github.com/go-pg/pg/v10/orm"
 	"delfi.dev/belaberung-v2/model"
+	"delfi.dev/belaberung-v2/postgres"
+	"github.com/joho/godotenv"
 	"net/http"
+	"fmt"
+	"strconv"
   	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := pg.Connect(&pg.Options{
-		User: "belaberung",
-		Password: "belaberung",
-		Database: "belaberung",
-	})
-	defer db.Close()
 
-	err := createSchema(db)
+	err := godotenv.Load()
+
 	if err != nil {
-		fmt.Println("schema error")
+		fmt.Println("No .env found...")
+	}
+
+	db, err := postgres.InitDB()
+	if err != nil {
 		panic(err)
 	}
+
+	defer db.Close()
 
 	r := gin.Default()
 
@@ -30,32 +32,57 @@ func main() {
 	})
 
 	r.GET("/users", func(c *gin.Context) {
-		users, err := model.GetAllUsers(db)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "error")
+		username := c.Query("name")
+		
+		var users []model.User
+		var err error
+
+		if username == "" {
+			users, err = model.GetAllUsers(db)
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+		} else {
+			var user *model.User
+			user, err = model.GetUserByUsername(db, username)
+			
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			if user == nil {
+				c.String(http.StatusNotFound, "user not found")
+				return
+			}
+
+			users = []model.User{*user}
 		}
-		c.JSON(http.StatusOK, users)
+
+		c.JSON(http.StatusOK, &users)
+	})
+
+	r.GET("/users/:id", func(c *gin.Context) {
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		user, err := model.GetUserById(db, id)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		
+		if user == nil {
+			c.String(http.StatusNotFound, "user not found")
+			return
+		}
+
+		c.JSON(http.StatusOK, &user)
 	})
 	
 	r.Run()
-}
-
-func createSchema(db *pg.DB) error {
-	models := []interface{}{
-		(*model.User)(nil),
-		(*model.Room)(nil),
-		(*model.RoomUser)(nil),
-		(*model.Message)(nil),
-		(*model.MessageAttachment)(nil),
-	}
-
-	for _, model := range models {
-		err := db.Model(model).CreateTable(&orm.CreateTableOptions{
-			IfNotExists: true,
-		})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }

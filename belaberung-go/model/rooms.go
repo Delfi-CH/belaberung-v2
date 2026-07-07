@@ -29,8 +29,24 @@ func CreateRoom(db *pg.DB, name, description, domain string) (*Room, error) {
 
 	_, err := db.Model(room).Insert()
 	if err != nil {
+		
 		return nil, err
 	}
 
 	return room, nil
+}
+
+func GetAllRooms(db *pg.DB) (*[]Room, error) {
+	var rooms []Room
+
+	err := db.Model(&rooms).Select() 
+
+	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &rooms, nil
 }

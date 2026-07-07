@@ -1,6 +1,9 @@
 package model
 
-import "github.com/go-pg/pg/v10"
+import (
+	"github.com/go-pg/pg/v10"
+	"delfi.dev/belaberung-v2/crypt"
+)
 
 type GlobalUserRole string
 
@@ -25,15 +28,19 @@ type User struct {
 }
 
 func CreateUser(db *pg.DB, username, domain, password string) (*User, error) {
+	hash, err := crypt.EncryptPassword(password)
+	if err != nil {
+		return nil, err
+	}
 	user := &User{
 		Username:       username,
 		Domain:         domain,
-		Password:       password,
+		Password:       hash,
 		ProfilePicture: "default",
 		GlobalRole:     GlobalUserRoleMember,
 	}
 
-	_, err := db.Model(user).Insert()
+	_, err = db.Model(user).Insert()
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +54,9 @@ func GetAllUsers(db *pg.DB) ([]User, error) {
 	err := db.Model(&users).Select() 
 
 	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -58,6 +68,50 @@ func GetUserById(db *pg.DB, id int) (*User, error) {
 	err := db.Model(user).WherePK().Select()
 
 	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func ValidateUserPassword(db *pg.DB, id int, password string) (bool, error) {
+	user := &User{ID: id}
+	err := db.Model(user).WherePK().Select()
+
+	if err != nil {
+		return false, err
+	}
+
+	passwordCorrect := crypt.CheckPassword(user.Password, password)
+
+	return passwordCorrect, nil
+}
+
+func GetUserByUsername(db *pg.DB, username string) (*User, error) {
+	user := &User{}
+	err := db.Model(user).Where("username = ?", username).Select()
+
+	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func GetUserByGlobalRole(db *pg.DB, role GlobalUserRole) (*User, error) {
+	user := &User{}
+	err := db.Model(user).Where("global_role = ?", role).Select()
+
+	if err != nil {
+		if err == pg.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 

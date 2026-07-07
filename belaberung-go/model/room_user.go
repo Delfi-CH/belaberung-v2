@@ -20,6 +20,7 @@ func CreateRoomUser(db *pg.DB, roomID, userID int) (*RoomUser, error) {
 
 	_, err := db.Model(room_user).Insert()
 	if err != nil {
+		
 		return nil, err
 	}
 

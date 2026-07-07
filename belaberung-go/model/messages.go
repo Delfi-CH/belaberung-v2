@@ -56,6 +56,7 @@ func CreateMessage(db *pg.DB, content string, attachment MessageAttachment, user
 
 	_, err := db.Model(message).Insert()
 	if err != nil {
+		
 		return nil, err
 	}
 
