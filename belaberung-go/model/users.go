@@ -31,6 +31,11 @@ type User struct {
 	GlobalRole     GlobalUserRole `bun:"global_role" json:"globalRole"`
 }
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func CreateUser(ctx context.Context, db *bun.DB, username, domain, password string) (*User, error) {
 	hash, err := crypt.EncryptPassword(password)
 	if err != nil {
