@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-pg/pg/v10"
+
 type RoomRole string
 
 const (
@@ -18,10 +20,17 @@ type Room struct {
 	Domain      string `pg:"domain,notnull" json:"domain"`
 }
 
-func NewRoom(name, description, domain string) *Room {
-	return &Room{
+func CreateRoom(db *pg.DB, name, description, domain string) (*Room, error) {
+	room := &Room{
 		Name:        name,
 		Description: description,
 		Domain:      domain,
 	}
+
+	_, err := db.Model(room).Insert()
+	if err != nil {
+		return nil, err
+	}
+
+	return room, nil
 }

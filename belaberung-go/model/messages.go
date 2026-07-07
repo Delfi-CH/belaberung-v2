@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-pg/pg/v10"
+
 import (
 	"encoding/json"
 	"time"
@@ -43,12 +45,19 @@ type Message struct {
 	Room *Room `pg:"rel:has-one"`
 }
 
-func NewMessage(content string, attachment MessageAttachment, userID, roomID int) *Message {
-	return &Message{
+func CreateMessage(db *pg.DB, content string, attachment MessageAttachment, userID, roomID int) (*Message, error) {
+	message := &Message{
 		Content:    content,
 		Attachment: attachment,
 		Timestamp:  time.Now(),
 		UserID:     userID,
 		RoomID:     roomID,
 	}
+
+	_, err := db.Model(message).Insert()
+	if err != nil {
+		return nil, err
+	}
+
+	return message, nil
 }

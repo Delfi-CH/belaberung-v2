@@ -5,11 +5,11 @@ import (
 	"github.com/go-pg/pg/v10"
     "github.com/go-pg/pg/v10/orm"
 	"delfi.dev/belaberung-v2/model"
+	"net/http"
+  	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	fmt.Println("hello, world")
-
 	db := pg.Connect(&pg.Options{
 		User: "belaberung",
 		Password: "belaberung",
@@ -23,21 +23,21 @@ func main() {
 		panic(err)
 	}
 
-	demoUser := model.NewUser("demo", "example.com", "1234")
+	r := gin.Default()
 
-	_, err = db.Model(demoUser).Insert()
-	if err != nil {
-		fmt.Println("insert error")
-		panic(err)
-	}
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "hello, world")
+	})
 
-	var users []model.User
-	err = db.Model(&users).Select()
-	if err != nil {
-		fmt.Println("select error")
-		panic(err)
-	}
-	fmt.Println(users)
+	r.GET("/users", func(c *gin.Context) {
+		users, err := model.GetAllUsers(db)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "error")
+		}
+		c.JSON(http.StatusOK, users)
+	})
+	
+	r.Run()
 }
 
 func createSchema(db *pg.DB) error {
@@ -50,7 +50,9 @@ func createSchema(db *pg.DB) error {
 	}
 
 	for _, model := range models {
-		err := db.Model(model).CreateTable(&orm.CreateTableOptions{})
+		err := db.Model(model).CreateTable(&orm.CreateTableOptions{
+			IfNotExists: true,
+		})
 		if err != nil {
 			return err
 		}

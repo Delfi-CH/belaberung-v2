@@ -1,5 +1,7 @@
 package model
 
+import "github.com/go-pg/pg/v10"
+
 type GlobalUserRole string
 
 const (
@@ -22,12 +24,42 @@ type User struct {
 	GlobalRole     GlobalUserRole `pg:"global_role" json:"globalRole"`
 }
 
-func NewUser(username, domain, password string) *User {
-	return &User{
+func CreateUser(db *pg.DB, username, domain, password string) (*User, error) {
+	user := &User{
 		Username:       username,
 		Domain:         domain,
 		Password:       password,
 		ProfilePicture: "default",
 		GlobalRole:     GlobalUserRoleMember,
 	}
+
+	_, err := db.Model(user).Insert()
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func GetAllUsers(db *pg.DB) ([]User, error) {
+	var users []User
+
+	err := db.Model(&users).Select() 
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func GetUserById(db *pg.DB, id int) (*User, error) {
+	user := &User{ID: id}
+	err := db.Model(user).WherePK().Select()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
