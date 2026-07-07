@@ -1,10 +1,11 @@
 package model
 
-import "github.com/go-pg/pg/v10"
-
 import (
+	"context"
 	"encoding/json"
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 type MessageAttachmentType string
@@ -28,24 +29,24 @@ type MessageAttachment struct {
 }
 
 type Message struct {
-	tableName struct{} `pg:"messages"`
+	bun.BaseModel `bun:"table:messages"`
 
-	ID int `pg:"id,pk"`
+	ID int `bun:"id,pk,autoincrement"`
 
 	Content string
 
-	Attachment MessageAttachment `pg:"type:jsonb"`
+	Attachment MessageAttachment `bun:",type:jsonb"`
 
-	Timestamp time.Time `pg:",index:idx_room_time"`
+	Timestamp time.Time `bun:",index:idx_room_time"`
 
-	UserID int `pg:",notnull,index:idx_user_messages"`
-	RoomID int `pg:",notnull,index:idx_room_time"`
+	UserID int `bun:",notnull,index:idx_user_messages"`
+	RoomID int `bun:",notnull,index:idx_room_time"`
 
-	User *User `pg:"rel:has-one"`
-	Room *Room `pg:"rel:has-one"`
+	User *User `bun:"rel:belongs-to,join:user_id=id"`
+	Room *Room `bun:"rel:belongs-to,join:room_id=id"`
 }
 
-func CreateMessage(db *pg.DB, content string, attachment MessageAttachment, userID, roomID int) (*Message, error) {
+func CreateMessage(ctx context.Context, db *bun.DB, content string, attachment MessageAttachment, userID, roomID int) (*Message, error) {
 	message := &Message{
 		Content:    content,
 		Attachment: attachment,
@@ -54,9 +55,10 @@ func CreateMessage(db *pg.DB, content string, attachment MessageAttachment, user
 		RoomID:     roomID,
 	}
 
-	_, err := db.Model(message).Insert()
+	_, err := db.NewInsert().
+		Model(message).
+		Exec(ctx)
 	if err != nil {
-		
 		return nil, err
 	}
 

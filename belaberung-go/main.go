@@ -1,13 +1,15 @@
 package main
 
 import (
+	"context"
+	"delfi.dev/belaberung-v2/db"
 	"delfi.dev/belaberung-v2/model"
-	"delfi.dev/belaberung-v2/postgres"
+	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"net/http"
-	"fmt"
+	"slices"
 	"strconv"
-  	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -18,7 +20,7 @@ func main() {
 		fmt.Println("No .env found...")
 	}
 
-	db, err := postgres.InitDB()
+	db, err := db.InitDB()
 	if err != nil {
 		panic(err)
 	}
@@ -33,20 +35,21 @@ func main() {
 
 	r.GET("/users", func(c *gin.Context) {
 		username := c.Query("name")
-		
+		role := c.Query("role")
+
 		var users []model.User
 		var err error
 
-		if username == "" {
-			users, err = model.GetAllUsers(db)
+		if username == "" && role == "" {
+			users, err = model.GetAllUsers(context.Background(), db)
 			if err != nil {
 				c.String(http.StatusInternalServerError, err.Error())
 				return
 			}
-		} else {
+		} else if role == "" {
 			var user *model.User
-			user, err = model.GetUserByUsername(db, username)
-			
+			user, err = model.GetUserByUsername(context.Background(), db, username)
+
 			if err != nil {
 				c.String(http.StatusInternalServerError, err.Error())
 				return
@@ -58,6 +61,38 @@ func main() {
 			}
 
 			users = []model.User{*user}
+		} else if username == "" {
+			users, err = model.GetUserByGlobalRole(context.Background(), db, model.GlobalUserRole(role))
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+
+		} else {
+			users, err = model.GetUserByGlobalRole(context.Background(), db, model.GlobalUserRole(role))
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+			var user *model.User
+			user, err = model.GetUserByUsername(context.Background(), db, username)
+
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			if user == nil {
+				c.String(http.StatusNotFound, "user not found")
+				return
+			}
+			if slices.Contains(users, *user) {
+				c.JSON(http.StatusOK, &user)
+				return
+			} else {
+				c.String(http.StatusNotFound, "user not found")
+				return
+			}
 		}
 
 		c.JSON(http.StatusOK, &users)
@@ -70,12 +105,12 @@ func main() {
 			c.String(http.StatusBadRequest, err.Error())
 			return
 		}
-		user, err := model.GetUserById(db, id)
+		user, err := model.GetUserById(context.Background(), db, id)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
-		
+
 		if user == nil {
 			c.String(http.StatusNotFound, "user not found")
 			return
@@ -83,6 +118,6 @@ func main() {
 
 		c.JSON(http.StatusOK, &user)
 	})
-	
+
 	r.Run()
 }

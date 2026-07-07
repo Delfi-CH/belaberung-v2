@@ -1,7 +1,7 @@
 package crypt
 
 import (
-    "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func EncryptPassword(password string) (string, error) {

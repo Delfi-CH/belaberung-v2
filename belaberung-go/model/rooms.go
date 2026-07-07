@@ -1,6 +1,12 @@
 package model
 
-import "github.com/go-pg/pg/v10"
+import (
+	"context"
+	"database/sql"
+	"errors"
+
+	"github.com/uptrace/bun"
+)
 
 type RoomRole string
 
@@ -12,37 +18,40 @@ const (
 )
 
 type Room struct {
-	tableName struct{} `pg:"rooms"`
+	bun.BaseModel `bun:"table:rooms"`
 
-	ID          int    `pg:"id,pk" json:"id"`
-	Name        string `pg:"name,notnull" json:"name"`
-	Description string `pg:"description" json:"description"`
-	Domain      string `pg:"domain,notnull" json:"domain"`
+	ID          int    `bun:"id,pk,autoincrement" json:"id"`
+	Name        string `bun:"name,notnull" json:"name"`
+	Description string `bun:"description" json:"description"`
+	Domain      string `bun:"domain,notnull" json:"domain"`
 }
 
-func CreateRoom(db *pg.DB, name, description, domain string) (*Room, error) {
+func CreateRoom(ctx context.Context, db *bun.DB, name, description, domain string) (*Room, error) {
 	room := &Room{
 		Name:        name,
 		Description: description,
 		Domain:      domain,
 	}
 
-	_, err := db.Model(room).Insert()
+	_, err := db.NewInsert().
+		Model(room).
+		Exec(ctx)
 	if err != nil {
-		
 		return nil, err
 	}
 
 	return room, nil
 }
 
-func GetAllRooms(db *pg.DB) (*[]Room, error) {
+func GetAllRooms(ctx context.Context, db *bun.DB) (*[]Room, error) {
 	var rooms []Room
 
-	err := db.Model(&rooms).Select() 
+	err := db.NewSelect().
+		Model(&rooms).
+		Scan(ctx)
 
 	if err != nil {
-		if err == pg.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err

@@ -7,3 +7,9 @@ build:
 
 run: 
 	go run .
+
+format: 
+	go fmt delfi.dev/belaberung-v2
+	go fmt delfi.dev/belaberung-v2/db
+	go fmt delfi.dev/belaberung-v2/crypt
+	go fmt delfi.dev/belaberung-v2/model
