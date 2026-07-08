@@ -11,7 +11,6 @@ import (
 	"github.com/uptrace/bun"
 )
 
-
 func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 	router.POST("/login", func(c *gin.Context) {
 		var user model.LoginRequest
@@ -58,9 +57,9 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 	})
 
-	router.GET("/logout", func (c *gin.Context) {
+	router.GET("/logout", func(c *gin.Context) {
 		session := sessions.Default(c)
-		session.Clear()	
+		session.Clear()
 		err := session.Save()
 
 		if err != nil {

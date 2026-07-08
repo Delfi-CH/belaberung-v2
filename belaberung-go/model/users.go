@@ -148,7 +148,7 @@ func GetUserByGlobalRole(ctx context.Context, db *bun.DB, role GlobalUserRole) (
 	return users, nil
 }
 
-func UpdateUsername(ctx context.Context, db *bun.DB, id int, username string) (*User, error) {
+func UpdateUserUsername(ctx context.Context, db *bun.DB, id int, username string) (*User, error) {
 	user := &User{ID: id}
 
 	_, err := db.NewUpdate().
@@ -162,4 +162,110 @@ func UpdateUsername(ctx context.Context, db *bun.DB, id int, username string) (*
 	}
 
 	return user, nil
+}
+
+func UpdateUserPassword(ctx context.Context, db *bun.DB, id int, oldPassword, newPassword string) (*User, error) {
+	user := &User{ID: id}
+
+	err := db.NewSelect().Model(user).WherePK().Scan(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if crypt.CheckPassword(user.Password, oldPassword) {
+		newHash, err := crypt.EncryptPassword(newPassword)
+
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = db.NewUpdate().
+			Model(user).
+			Set("password = ?", newHash).
+			WherePK().
+			Exec(ctx)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return user, nil
+}
+
+func UpdateUserBiograpgy(ctx context.Context, db *bun.DB, id int, biography string) (*User, error) {
+	user := &User{ID: id}
+
+	_, err := db.NewUpdate().
+		Model(user).
+		Set("biography = ?", biography).
+		WherePK().
+		Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func UpdateUserPronouns(ctx context.Context, db *bun.DB, id int, pronouns string) (*User, error) {
+	user := &User{ID: id}
+
+	_, err := db.NewUpdate().
+		Model(user).
+		Set("pronouns = ?", pronouns).
+		WherePK().
+		Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func UpdateUserIsSuspended(ctx context.Context, db *bun.DB, id int, suspended bool) (*User, error) {
+	user := &User{ID: id}
+
+	_, err := db.NewUpdate().
+		Model(user).
+		Set("suspended = ?", suspended).
+		WherePK().
+		Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func UpdateUserGlobalRole(ctx context.Context, db *bun.DB, id int, role GlobalUserRole) (*User, error) {
+	user := &User{ID: id}
+
+	_, err := db.NewUpdate().
+		Model(user).
+		Set("global_role = ?", role).
+		WherePK().
+		Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func DeleteUser(ctx context.Context, db *bun.DB, id int) error {
+	user := &User{ID: id}
+
+	_, err := db.NewDelete().Model(user).WherePK().Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

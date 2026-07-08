@@ -4,11 +4,11 @@ import (
 	"delfi.dev/belaberung-v2/db"
 	"delfi.dev/belaberung-v2/route"
 	"fmt"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"net/http"
-	"github.com/gin-contrib/sessions"
-  	"github.com/gin-contrib/sessions/cookie"
 	"os"
 )
 
