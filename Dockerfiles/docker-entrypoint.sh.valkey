@@ -5,7 +5,7 @@ cat > /data/valkey.conf <<EOF
 appendonly yes
 
 user default off
-user ${BELABERUNG_VALKEY_USER} on >${BELABERUNG_VALKEY_PASS} ~belaberung:* +@read +@write +ping -@dangerous
+user ${BELABERUNG_VALKEY_USER} on >${BELABERUNG_VALKEY_PASS} ~* +@read +@write +ping -@dangerous
 EOF
 
 exec valkey-server /data/valkey.conf
