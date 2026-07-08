@@ -40,7 +40,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		session.Set("username", user.Username)
 		err = session.Save()
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error")
+			c.String(http.StatusInternalServerError, "cookie error")
 			return
 		}
 		c.String(http.StatusOK, "login")
@@ -56,5 +56,17 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		} else {
 			c.String(http.StatusForbidden, "not logged in")
 		}
+	})
+
+	router.GET("/logout", func (c *gin.Context) {
+		session := sessions.Default(c)
+		session.Clear()	
+		err := session.Save()
+
+		if err != nil {
+			c.String(http.StatusInternalServerError, "logout failed")
+			return
+		}
+		c.String(http.StatusOK, "logout sucessfull")
 	})
 }
