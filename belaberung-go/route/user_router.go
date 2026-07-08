@@ -88,6 +88,11 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 		c.JSON(http.StatusOK, &users)
 	})
 
+	//curl -b /tmp/cookies http://localhost:8080/users
+	//curl -b /tmp/cookies http://localhost:8080/users?name=demo
+	//curl -b /tmp/cookies http://localhost:8080/users?role=Member
+	//curl -b /tmp/cookies http://localhost:8080/users?name=demo&role=member
+
 	router.GET("/:id", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
@@ -122,4 +127,6 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 
 		c.JSON(http.StatusOK, &user)
 	})
+
+	//curl -b /tmp/cookies http://localhost:8080/users/1
 }

@@ -45,6 +45,8 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		c.String(http.StatusOK, "login")
 	})
 
+	//curl -X POST -H "Content-Type: application/json" -d '{"username":"demo","password":"1234"}' -c /tmp/cookies http://localhost:8080/auth/login
+
 	router.GET("/status", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
@@ -57,6 +59,8 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 	})
 
+	//curl -b /tmp/cookies http://localhost:8080/auth/status 
+
 	router.GET("/logout", func(c *gin.Context) {
 		session := sessions.Default(c)
 		session.Clear()
@@ -68,4 +72,6 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 		c.String(http.StatusOK, "logout sucessfull")
 	})
+
+	//curl -c /tmp/cookies http://localhost:8080/auth/logout 
 }
