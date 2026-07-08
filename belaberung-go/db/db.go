@@ -62,21 +62,56 @@ func InitDB() (*bun.DB, error) {
 }
 
 func createSchema(ctx context.Context, db *bun.DB) error {
-	models := []interface{}{
-		(*model.User)(nil),
-		(*model.Room)(nil),
-		(*model.RoomUser)(nil),
-		(*model.Message)(nil),
+	var err error
+
+	_, err = db.NewCreateTable().
+	Model((*model.User)(nil)).
+	IfNotExists().
+	Exec(ctx)
+
+	if err != nil {
+		return err
 	}
 
-	for _, model := range models {
-		_, err := db.NewCreateTable().
-			Model(model).
-			IfNotExists().
-			Exec(ctx)
-		if err != nil {
-			return err
-		}
+	_, err = db.NewCreateTable().
+	Model((*model.Room)(nil)).
+	IfNotExists().
+	Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NewCreateTable().
+	Model((*model.Message)(nil)).
+	IfNotExists().
+	WithForeignKeys().
+	ForeignKey(`
+		("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+	`).
+	ForeignKey(`
+		("room_id") REFERENCES "rooms" ("id") ON DELETE CASCADE
+	`).
+	Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = db.NewCreateTable().
+	Model((*model.RoomUser)(nil)).
+	IfNotExists().
+	WithForeignKeys().
+	ForeignKey(`
+		("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
+	`).
+	ForeignKey(`
+		("room_id") REFERENCES "rooms" ("id") ON DELETE CASCADE
+	`).
+	Exec(ctx)
+
+	if err != nil {
+		return err
 	}
 
 	return nil

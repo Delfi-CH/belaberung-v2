@@ -37,10 +37,10 @@ type Message struct {
 
 	Attachment MessageAttachment `bun:",type:jsonb"`
 
-	Timestamp time.Time `bun:",index:idx_room_time"`
+	Timestamp time.Time
 
-	UserID int `bun:",notnull,index:idx_user_messages"`
-	RoomID int `bun:",notnull,index:idx_room_time"`
+	UserID int `bun:",notnull"`
+	RoomID int `bun:",notnull"`
 
 	User *User `bun:"rel:belongs-to,join:user_id=id"`
 	Room *Room `bun:"rel:belongs-to,join:room_id=id"`
@@ -63,4 +63,52 @@ func CreateMessage(ctx context.Context, db *bun.DB, content string, attachment M
 	}
 
 	return message, nil
+}
+
+func GetRecentMessages(ctx context.Context, db *bun.DB, roomID int, limit int, cursor int) ([]Message, error) {
+	var messages []Message
+
+	query := db.NewSelect().
+		Model(&messages).
+		Where("room_id = ?", roomID).
+		Order("id DESC").
+		Limit(limit)
+
+	if cursor > 0 {
+		query = query.Where("id < ?", cursor)
+	}
+
+	err := query.Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+/*
+	Load Messages
+	messages, err := GetRecentMessages(ctx, db, roomID, 50, 0)
+
+	Get oldest
+	nextCursor := messages[len(messages)-1].ID
+	olderMessages, err := GetRecentMessages(ctx, db, roomID, 50, nextCursor)
+*/
+
+func GetLastMessageID(ctx context.Context, db *bun.DB, roomID int) (int, error) {
+	var message Message
+
+	err := db.NewSelect().
+		Model(&message).
+		Column("id").
+		Where("room_id = ?", roomID).
+		Order("id DESC").
+		Limit(1).
+		Scan(ctx)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return message.ID, nil
 }

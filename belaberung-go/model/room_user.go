@@ -9,8 +9,11 @@ import (
 type RoomUser struct {
 	bun.BaseModel `bun:"table:room_users"`
 
-	RoomID int `bun:",pk,index:idx_room_user"`
-	UserID int `bun:",pk,index:idx_room_user"`
+	RoomID int `bun:",pk"`
+	UserID int `bun:",pk"`
+
+	Room *Room `bun:"rel:belongs-to,join:room_id=id"`
+	User *User `bun:"rel:belongs-to,join:user_id=id"`
 
 	Role RoomRole
 }
