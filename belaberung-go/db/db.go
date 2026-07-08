@@ -65,50 +65,50 @@ func createSchema(ctx context.Context, db *bun.DB) error {
 	var err error
 
 	_, err = db.NewCreateTable().
-	Model((*model.User)(nil)).
-	IfNotExists().
-	Exec(ctx)
+		Model((*model.User)(nil)).
+		IfNotExists().
+		Exec(ctx)
 
 	if err != nil {
 		return err
 	}
 
 	_, err = db.NewCreateTable().
-	Model((*model.Room)(nil)).
-	IfNotExists().
-	Exec(ctx)
+		Model((*model.Room)(nil)).
+		IfNotExists().
+		Exec(ctx)
 
 	if err != nil {
 		return err
 	}
 
 	_, err = db.NewCreateTable().
-	Model((*model.Message)(nil)).
-	IfNotExists().
-	WithForeignKeys().
-	ForeignKey(`
+		Model((*model.Message)(nil)).
+		IfNotExists().
+		WithForeignKeys().
+		ForeignKey(`
 		("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
 	`).
-	ForeignKey(`
+		ForeignKey(`
 		("room_id") REFERENCES "rooms" ("id") ON DELETE CASCADE
 	`).
-	Exec(ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err
 	}
 
 	_, err = db.NewCreateTable().
-	Model((*model.RoomUser)(nil)).
-	IfNotExists().
-	WithForeignKeys().
-	ForeignKey(`
+		Model((*model.RoomUser)(nil)).
+		IfNotExists().
+		WithForeignKeys().
+		ForeignKey(`
 		("user_id") REFERENCES "users" ("id") ON DELETE CASCADE
 	`).
-	ForeignKey(`
+		ForeignKey(`
 		("room_id") REFERENCES "rooms" ("id") ON DELETE CASCADE
 	`).
-	Exec(ctx)
+		Exec(ctx)
 
 	if err != nil {
 		return err

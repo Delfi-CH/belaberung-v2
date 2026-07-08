@@ -15,13 +15,13 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 	router.POST("/login", func(c *gin.Context) {
 		var user model.LoginRequest
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.String(http.StatusBadRequest, "bad request")
+			c.String(http.StatusBadRequest, "bad request: "+err.Error())
 			return
 		}
 
 		dbUser, err := model.GetUserByUsername(context.Background(), db, user.Username)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "database error")
+			c.String(http.StatusInternalServerError, "database error: "+err.Error())
 			return
 		}
 
@@ -39,7 +39,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		session.Set("username", user.Username)
 		err = session.Save()
 		if err != nil {
-			c.String(http.StatusInternalServerError, "cookie error")
+			c.String(http.StatusInternalServerError, "session store error: "+err.Error())
 			return
 		}
 		c.String(http.StatusOK, "login")
@@ -63,7 +63,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		err := session.Save()
 
 		if err != nil {
-			c.String(http.StatusInternalServerError, "logout failed")
+			c.String(http.StatusInternalServerError, "logout failed: "+err.Error())
 			return
 		}
 		c.String(http.StatusOK, "logout sucessfull")

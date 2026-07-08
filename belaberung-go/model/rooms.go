@@ -120,7 +120,7 @@ func UpdateRoomDescription(ctx context.Context, db *bun.DB, id int, description 
 	return room, nil
 }
 
-func DeleteRoom(ctx context.Context, db *bun.DB, id int) (error) {
+func DeleteRoom(ctx context.Context, db *bun.DB, id int) error {
 	room := &Room{ID: id}
 
 	_, err := db.NewDelete().Model(room).WherePK().Exec(ctx)
