@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: belaberung-postgres
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      - POSTGRES_DB=${BELABERUNG_PG_NAME}
+      - POSTGRES_USER=${BELABERUNG_PG_USER}
+      - POSTGRES_PASSWORD=${BELABERUNG_PG_PASS}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/18/docker
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  valkey: 
+    image: valkey/valkey:9
+    container_name: belaberung-valkey
+    restart: unless-stopped
+    environment:
+      - BELABERUNG_VALKEY_USER=${BELABERUNG_VALKEY_USER}
+      - BELABERUNG_VALKEY_PASS=${BELABERUNG_VALKEY_PASS}
+    ports:
+      - 6379:6379
+    volumes:
+      - valkey_data:/data
+      - ./Dockerfiles/docker-entrypoint.sh.valkey:/docker-entrypoint.sh:ro
+    entrypoint: ["/docker-entrypoint.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli --user $$BELABERUNG_VALKEY_USER --pass $$BELABERUNG_VALKEY_PASS ping | grep PONG"]      
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+  backend:
+    build:
+      context: ./belaberung-go
+      dockerfile: ../Dockerfiles/Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      - BELABERUNG_DB_HOST=${BELABERUNG_BACKEND_DB_HOST}
+      - BELABERUNG_DB_NAME=${BELABERUNG_PG_NAME}
+      - BELABERUNG_DB_USERNAME=${BELABERUNG_PG_USER}
+      - BELABERUNG_DB_PASSWORD=${BELABERUNG_PG_PASS}
+      - BELABERUNG_COOKIE_SECRET=${BELABERUNG_BACKEND_COOKIE_SECRET}
+      - PORT=8080
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      valkey:
+        condition: service_healthy
+        restart: true
+
+volumes:
+  postgres_data:
+  valkey_data:

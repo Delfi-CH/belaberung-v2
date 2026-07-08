@@ -1,0 +1,21 @@
+FROM golang:alpine AS builder
+
+RUN apk update && apk add make
+
+WORKDIR /app
+
+COPY . .
+
+ENV GIN_MODE=release
+
+RUN make
+
+
+
+FROM golang:alpine AS production
+
+COPY --from=builder /app/bin/belaberung-server /go/belaberung-server
+
+EXPOSE 8080
+
+CMD [ "/go/belaberung-server" ]
