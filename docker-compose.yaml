@@ -41,6 +41,7 @@ services:
     build:
       context: ./belaberung-go
       dockerfile: ../Dockerfiles/Dockerfile.backend
+    container_name: belaberung-backend
     restart: unless-stopped
     environment:
       - BELABERUNG_DB_HOST=${BELABERUNG_BACKEND_DB_HOST}
@@ -61,7 +62,6 @@ services:
       valkey:
         condition: service_healthy
         restart: true
-
 volumes:
   postgres_data:
   valkey_data:
