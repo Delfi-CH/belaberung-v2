@@ -251,6 +251,12 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		user, err = model.GetUserById(context.Background(), db, id)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
 		
 		c.JSON(http.StatusOK, &user)
 	})
