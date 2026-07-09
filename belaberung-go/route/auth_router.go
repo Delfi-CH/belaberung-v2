@@ -3,6 +3,7 @@ package route
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"delfi.dev/belaberung-v2/crypt"
 	"delfi.dev/belaberung-v2/model"
@@ -13,6 +14,13 @@ import (
 
 func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 	router.POST("/login", func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionUsername := session.Get("username")
+		if sessionUsername != nil {
+			c.String(http.StatusTeapot, "already logged in")
+			return
+		}
+
 		var user model.LoginRequest
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.String(http.StatusBadRequest, "bad request: "+err.Error())
@@ -35,7 +43,6 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 			return
 		}
 
-		session := sessions.Default(c)
 		session.Set("username", user.Username)
 		err = session.Save()
 		if err != nil {
@@ -73,5 +80,41 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		c.String(http.StatusOK, "logout sucessfull")
 	})
 
-	//curl -c /tmp/cookies http://localhost:8080/auth/logout 
+	//curl -c /tmp/cookies http://localhost:8080/auth/logout
+	
+	router.POST("/register", func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionUsername := session.Get("username")
+		if sessionUsername != nil {
+			c.String(http.StatusTeapot, "already logged in")
+			return
+		}
+
+		var user model.RegisterRequest
+		var err error 
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.String(http.StatusBadRequest, "bad request: "+err.Error())
+			return
+		}
+
+		dbUser, err := model.CreateUser(context.Background(), db, user.Username, user.Domain, user.Password)
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key") || strings.Contains(err.Error(), "users_username_key") || strings.Contains(err.Error(), "unique constraint") {
+				c.String(http.StatusConflict, "username already exists")
+				return
+			} else {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+		session.Set("username", user.Username)
+		err = session.Save()
+		if err != nil {
+			c.String(http.StatusInternalServerError, "session store error: "+err.Error())
+			return
+		}
+		c.JSON(http.StatusCreated, dbUser)
+	})
+
+	//curl -X POST -H "Content-Type: application/json" -d '{"username":"test","password":"1234", "domain":"example.com"}' -c /tmp/cookies http://localhost:8080/auth/register
 }

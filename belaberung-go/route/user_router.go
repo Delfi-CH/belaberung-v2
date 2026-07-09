@@ -13,7 +13,7 @@ import (
 )
 
 func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
-	router.GET("/", func(c *gin.Context) {
+	router.GET("", func(c *gin.Context) {
 
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")

@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"os"
 
 	"delfi.dev/belaberung-v2/db"
-	"delfi.dev/belaberung-v2/model"
 	"delfi.dev/belaberung-v2/route"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
@@ -71,11 +69,13 @@ func main() {
 	userRouter := r.Group("/users")
 	route.InitUserRouter(userRouter, db)
 
+	roomRouter := r.Group("/rooms")
+	route.InitRoomRouter(roomRouter, db)
+
 	authRouter := r.Group("/auth")
 	route.InitAuthRouter(authRouter, db)
 
 	r.GET("/", func(c *gin.Context) {
-		model.CreateUser(context.Background(), db, "demo", "example.com", "1234")
 		c.String(http.StatusOK, "hello, world")
 	})
 

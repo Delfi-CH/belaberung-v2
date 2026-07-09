@@ -43,7 +43,7 @@ func CreateRoom(ctx context.Context, db *bun.DB, name, description, domain strin
 	return room, nil
 }
 
-func GetAllRooms(ctx context.Context, db *bun.DB) (*[]Room, error) {
+func GetAllRooms(ctx context.Context, db *bun.DB) ([]Room, error) {
 	var rooms []Room
 
 	err := db.NewSelect().
@@ -57,7 +57,7 @@ func GetAllRooms(ctx context.Context, db *bun.DB) (*[]Room, error) {
 		return nil, err
 	}
 
-	return &rooms, nil
+	return rooms, nil
 }
 
 func GetRoomById(ctx context.Context, db *bun.DB, id int) (*Room, error) {

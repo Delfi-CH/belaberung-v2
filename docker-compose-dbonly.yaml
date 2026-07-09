@@ -37,32 +37,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-  backend:
-    build:
-      context: ./belaberung-go
-      dockerfile: ../Dockerfiles/Dockerfile.backend
-    container_name: belaberung-backend
-    restart: unless-stopped
-    environment:
-      - BELABERUNG_DB_HOST=${BELABERUNG_BACKEND_DB_HOST}
-      - BELABERUNG_DB_NAME=${BELABERUNG_PG_NAME}
-      - BELABERUNG_DB_USERNAME=${BELABERUNG_PG_USER}
-      - BELABERUNG_DB_PASSWORD=${BELABERUNG_PG_PASS}
-      - BELABERUNG_SESSION_SECRET=${BELABERUNG_BACKEND_SESSION_SECRET}
-      - BELABERUNG_REDIS_HOST=${BELABERUNG_BACKEND_VALKEY_HOST}
-      - BELABERUNG_REDIS_USERNAME=${BELABERUNG_VALKEY_USER}
-      - BELABERUNG_REDIS_PASSWORD=${BELABERUNG_VALKEY_PASS}
-      - PORT=8080
-      - GIN_MODE=release
-    ports:
-      - 8080:8080
-    depends_on:
-      postgres:
-        condition: service_healthy
-        restart: true
-      valkey:
-        condition: service_healthy
-        restart: true
+
 volumes:
   postgres_data:
   valkey_data:
