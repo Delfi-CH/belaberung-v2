@@ -66,6 +66,19 @@ func GetRoomUsersByRoomID(ctx context.Context, db *bun.DB, roomID int) ([]RoomUs
 	return room_users, nil
 }
 
+func GetRoomUsersByRoomIDAndRole(ctx context.Context, db *bun.DB, roomID int, role RoomRole) ([]RoomUser, error) {
+	var room_users []RoomUser
+
+	err := db.NewSelect().Model(&room_users).Where("room_id = ?", roomID).Where("role = ?", role).Relation("User").Relation("Room").Scan(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return room_users, nil
+}
+
 func UpdateRoomUserRole(ctx context.Context, db *bun.DB, roomID, userID int, role RoomRole) (*RoomUser, error) {
 	room_user, err := GetRoomUserByIDs(ctx, db, roomID, userID)
 	if err != nil {

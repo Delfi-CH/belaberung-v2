@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"delfi.dev/belaberung-v2/crypt"
 	"github.com/uptrace/bun"
 )
 
@@ -24,16 +25,43 @@ type Room struct {
 	Name        string `bun:"name,unique,notnull" json:"name"`
 	Description string `bun:"description" json:"description"`
 	Domain      string `bun:"domain,notnull" json:"domain"`
+	IsPrivate   bool   `bun:"private,notnull" json:"private"`
+	Password    string `bun:"password" json:"-"`
 }
 
-func CreateRoom(ctx context.Context, db *bun.DB, name, description, domain string) (*Room, error) {
+func CreatePublicRoom(ctx context.Context, db *bun.DB, name, description, domain string) (*Room, error) {
 	room := &Room{
 		Name:        name,
 		Description: description,
 		Domain:      domain,
+		IsPrivate:   false,
 	}
 
 	_, err := db.NewInsert().
+		Model(room).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return room, nil
+}
+
+func CreatePrivateRoom(ctx context.Context, db *bun.DB, name, description, domain, password string) (*Room, error) {
+	hash, err := crypt.EncryptPassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	room := &Room{
+		Name:        name,
+		Description: description,
+		Domain:      domain,
+		IsPrivate:   true,
+		Password:    hash,
+	}
+
+	_, err = db.NewInsert().
 		Model(room).
 		Exec(ctx)
 	if err != nil {
@@ -48,6 +76,7 @@ func GetAllRooms(ctx context.Context, db *bun.DB) ([]Room, error) {
 
 	err := db.NewSelect().
 		Model(&rooms).
+		Where("private = ?", false).
 		Scan(ctx)
 
 	if err != nil {
@@ -62,7 +91,7 @@ func GetAllRooms(ctx context.Context, db *bun.DB) ([]Room, error) {
 
 func GetRoomById(ctx context.Context, db *bun.DB, id int) (*Room, error) {
 	room := &Room{ID: id}
-	err := db.NewSelect().Model(room).WherePK().Scan(ctx)
+	err := db.NewSelect().Model(room).WherePK().Where("private = ?", false).Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -72,6 +101,22 @@ func GetRoomById(ctx context.Context, db *bun.DB, id int) (*Room, error) {
 	}
 
 	return room, nil
+}
+
+func GetPrivateRoomById(ctx context.Context, db *bun.DB, id int, password string) (*Room, error) {
+	room := &Room{ID: id}
+	err := db.NewSelect().Model(room).WherePK().Scan(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if crypt.CheckPassword(room.Password, password) {
+		return room, nil
+	} else {
+		return nil, nil
+	}
 }
 
 func GetRoomByName(ctx context.Context, db *bun.DB, name string) (*Room, error) {
