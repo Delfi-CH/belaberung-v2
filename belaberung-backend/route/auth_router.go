@@ -49,7 +49,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 			c.String(http.StatusInternalServerError, "session store error: "+err.Error())
 			return
 		}	
-		c.String(http.StatusOK, "login")
+		c.JSON(http.StatusOK, dbUser)
 	})
 
 	//curl -X POST -H "Content-Type: application/json" -d '{"username":"demo","password":"1234"}' -c /tmp/cookies http://localhost:8080/auth/login
