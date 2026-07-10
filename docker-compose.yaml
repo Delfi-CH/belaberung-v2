@@ -52,6 +52,7 @@ services:
       - BELABERUNG_REDIS_HOST=${BELABERUNG_BACKEND_VALKEY_HOST}
       - BELABERUNG_REDIS_USERNAME=${BELABERUNG_VALKEY_USER}
       - BELABERUNG_REDIS_PASSWORD=${BELABERUNG_VALKEY_PASS}
+      - BELABERUNG_DOMAIN=${BELABERUNG_DOMAIN}
       - PORT=8081
       - GIN_MODE=release
     ports:
@@ -63,6 +64,12 @@ services:
       valkey:
         condition: service_healthy
         restart: true
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8081/ || exit 1"]      
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
   webui:
     build:
       context: ./belaberung-webui
@@ -77,6 +84,9 @@ services:
         condition: service_healthy
         restart: true
       valkey:
+        condition: service_healthy
+        restart: true
+      backend: 
         condition: service_healthy
         restart: true
 volumes:
