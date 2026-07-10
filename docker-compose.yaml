@@ -39,7 +39,7 @@ services:
       start_period: 30s
   backend:
     build:
-      context: ./belaberung-go
+      context: ./belaberung-backend
       dockerfile: ../Dockerfiles/Dockerfile.backend
     container_name: belaberung-backend
     restart: unless-stopped
@@ -52,10 +52,26 @@ services:
       - BELABERUNG_REDIS_HOST=${BELABERUNG_BACKEND_VALKEY_HOST}
       - BELABERUNG_REDIS_USERNAME=${BELABERUNG_VALKEY_USER}
       - BELABERUNG_REDIS_PASSWORD=${BELABERUNG_VALKEY_PASS}
-      - PORT=8080
+      - PORT=8081
       - GIN_MODE=release
     ports:
-      - 8080:8080
+      - 8081:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      valkey:
+        condition: service_healthy
+        restart: true
+  webui:
+    build:
+      context: ./belaberung-webui
+      dockerfile: ../Dockerfiles/Dockerfile.webui # or ../Dockerfiles/Dockerfile.webui.rootless for rootless builds
+    container_name: belaberung-webui
+    restart: unless-stopped
+    ports:
+      - 80:80
+    # - 8080:8080 for rootless builds
     depends_on:
       postgres:
         condition: service_healthy
