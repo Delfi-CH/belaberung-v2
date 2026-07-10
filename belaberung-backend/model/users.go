@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"os"
 
 	"delfi.dev/belaberung-v2/crypt"
 	"github.com/uptrace/bun"
@@ -31,10 +32,16 @@ type User struct {
 	GlobalRole     GlobalUserRole `bun:"global_role" json:"globalRole"`
 }
 
-func CreateUser(ctx context.Context, db *bun.DB, username, domain, password string) (*User, error) {
+func CreateUser(ctx context.Context, db *bun.DB, username, password string) (*User, error) {
 	hash, err := crypt.EncryptPassword(password)
 	if err != nil {
 		return nil, err
+	}
+
+	domain, exists := os.LookupEnv("BELABERUNG_DOMAIN")
+
+	if !exists {
+		domain = "example.com"
 	}
 
 	user := &User{

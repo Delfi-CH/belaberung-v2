@@ -48,7 +48,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		if err != nil {
 			c.String(http.StatusInternalServerError, "session store error: "+err.Error())
 			return
-		}
+		}	
 		c.String(http.StatusOK, "login")
 	})
 
@@ -97,7 +97,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 			return
 		}
 
-		dbUser, err := model.CreateUser(context.Background(), db, user.Username, user.Domain, user.Password)
+		dbUser, err := model.CreateUser(context.Background(), db, user.Username, user.Password)
 		if err != nil {
 			if strings.Contains(err.Error(), "duplicate key") || strings.Contains(err.Error(), "users_username_key") || strings.Contains(err.Error(), "unique constraint") {
 				c.String(http.StatusConflict, "username already exists")
