@@ -11,6 +11,7 @@ import (
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -64,7 +65,19 @@ func main() {
 		panic(err)
 	}
 
+	store.Options(sessions.Options{
+		HttpOnly: true,
+		MaxAge: 86400,
+	})
+
 	r.Use(sessions.Sessions("redis", store))
+	
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173",},
+    	AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+    	AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	userRouter := r.Group("/users")
 	route.InitUserRouter(userRouter, db)
