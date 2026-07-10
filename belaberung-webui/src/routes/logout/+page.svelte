@@ -1,18 +1,20 @@
 <script lang="ts">
-	import { api } from "$lib/api";
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
+	import { logout } from '$lib/api/auth';
 
-    let errorMessage = $state("")
+	let errorMessage = $state('');
 
-    onMount(async ()=>{
-        try {
-            await api.get("/auth/logout")
-        } catch {
-            errorMessage = "server error"
-        }
-        
-    })
+	onMount(async () => {
+		let ok = await logout();
+		if (ok) {
+			goto(resolve('/login'));
+		} else {
+			errorMessage = 'server error';
+		}
+	});
 </script>
 
-<p>logout</p>
+<p>Logging you out...</p>
 <p>{errorMessage}</p>
