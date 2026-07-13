@@ -19,31 +19,24 @@
 	}
 </script>
 
-<div class="mx-auto w-full max-w-md space-y-4">
-	<h1 class="h1">Register</h1>
+<div>
+	<h1>Register</h1>
 	<form onsubmit={async () => await handleSubmit()}>
-		<fieldset class="space-y-4">
-			<label for="username" class="label">Username</label><input
+			<label for="username">Username</label><input
 				type="username"
 				id="username"
 				required
 				bind:value={username}
-				class="input"
 			/>
-			<label for="password" class="label">Password</label><input
+			<label for="password">Password</label><input
 				type="password"
 				id="password"
 				required
 				bind:value={password}
-				class="input"
 			/>
-		</fieldset>
-		<fieldset class="flex pt-4" >
-			<button type="submit" class="btn preset-outlined-surface-300-700 bg-green-400">Sign Up</button>
-			<p class="pl-3">Alreay have an account? Log in <a href={resolve("/login")} class="link underline">here</a></p>
-		</fieldset>
-        <fieldset class="pt-4">
+			<button type="submit">Sign Up</button>
+			<p>Alreay have an account? Log in <a href={resolve("/login")}>here</a></p>
+
             <Alert isVisible={showError} message={errorMessage} onDismiss={()=> showError = !showError}></Alert>
-        </fieldset>
 	</form>
 </div>
