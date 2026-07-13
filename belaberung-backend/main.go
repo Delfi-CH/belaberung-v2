@@ -68,6 +68,7 @@ func main() {
 	store.Options(sessions.Options{
 		HttpOnly: true,
 		MaxAge: 86400,
+		Path: "/",
 	})
 
 	r.Use(sessions.Sessions("redis", store))
