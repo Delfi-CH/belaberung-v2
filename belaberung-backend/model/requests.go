@@ -13,7 +13,6 @@ type RegisterRequest struct {
 type CreateRoomRequest struct {
 	Name string `json:"name"`
 	Description string `json:"description"`
-	Domain string `json:"domain"`
 	Password *string `json:"password"`
 }
 
