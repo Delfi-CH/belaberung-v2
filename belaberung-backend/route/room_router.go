@@ -220,12 +220,12 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		var dbRoom *model.Room
 
 		if private == "true" && room.Password != nil {
-			dbRoom, err = model.CreatePrivateRoom(context.Background(), db, room.Name, room.Description, room.Domain, *room.Password)
+			dbRoom, err = model.CreatePrivateRoom(context.Background(), db, room.Name, room.Description, *room.Password)
 		} else if private == "true" && room.Password == nil {
 			c.String(http.StatusBadRequest, "private rooms need a password")
 			return
-		} else if private == "false" {
-			dbRoom, err = model.CreatePublicRoom(context.Background(), db, room.Name, room.Description, room.Domain)
+		} else if private == "false" || private == "" {
+			dbRoom, err = model.CreatePublicRoom(context.Background(), db, room.Name, room.Description)
 		}
 
 		if err != nil {
