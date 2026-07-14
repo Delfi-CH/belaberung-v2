@@ -7,6 +7,7 @@ import (
 
 	"delfi.dev/belaberung-v2/crypt"
 	"github.com/uptrace/bun"
+	"os"
 )
 
 type RoomRole string
@@ -29,7 +30,13 @@ type Room struct {
 	Password    string `bun:"password" json:"-"`
 }
 
-func CreatePublicRoom(ctx context.Context, db *bun.DB, name, description, domain string) (*Room, error) {
+func CreatePublicRoom(ctx context.Context, db *bun.DB, name, description string) (*Room, error) {
+	domain, exists := os.LookupEnv("BELABERUNG_DOMAIN")
+
+	if !exists {
+		domain = "example.com"
+	}
+
 	room := &Room{
 		Name:        name,
 		Description: description,
@@ -47,7 +54,12 @@ func CreatePublicRoom(ctx context.Context, db *bun.DB, name, description, domain
 	return room, nil
 }
 
-func CreatePrivateRoom(ctx context.Context, db *bun.DB, name, description, domain, password string) (*Room, error) {
+func CreatePrivateRoom(ctx context.Context, db *bun.DB, name, description, password string) (*Room, error) {
+	domain, exists := os.LookupEnv("BELABERUNG_DOMAIN")
+
+	if !exists {
+		domain = "example.com"
+	}
 	hash, err := crypt.EncryptPassword(password)
 	if err != nil {
 		return nil, err
