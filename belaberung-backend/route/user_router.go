@@ -130,6 +130,47 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 
 	//curl -b /tmp/cookies http://localhost:8080/users/1
 
+	router.GET("/:id/joined", func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionUsername := session.Get("username")
+		sessionIsAdministrator := session.Get("admin")
+
+		if sessionUsername == nil {
+			c.String(http.StatusUnauthorized, "not logged in")
+			return
+		}
+
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		user_rooms, err := model.GetAllRoomsOfAnUser(context.Background(), db, id)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		user, err := model.GetUserById(context.Background(), db, id)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if user == nil {
+			c.String(http.StatusNotFound, "user not found")
+			return
+		}
+
+		if user.Username != sessionUsername || sessionIsAdministrator == false {
+			c.String(http.StatusForbidden, "invailid permissions")
+			return
+		}
+
+		c.JSON(http.StatusOK, &user_rooms)
+	})
+
 	router.DELETE("/:id", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
