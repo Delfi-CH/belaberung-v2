@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Form, Input, Button, Container, Row, Col, Label } from "@sveltestrap/sveltestrap"
     import { api } from "$lib/api/core"
+	import { goto } from "$app/navigation";
+    import { resolve } from "$app/paths"
     let name = $state("")
     let description = $state("")
     let isPrivate = $state(false)
@@ -26,6 +28,7 @@
             }
             try {
                 await api.post("/rooms", data)
+                goto(resolve("/rooms"))
             } catch {
                 //
             }
