@@ -21,7 +21,7 @@
 
 <div>
 	<h1>Login</h1>
-	<form onsubmit={async () => await handleSubmit()}>
+	<form on:submit={async () => await handleSubmit()}>
 			<label for="username">Username</label><input
 				type="username"
 				id="username"

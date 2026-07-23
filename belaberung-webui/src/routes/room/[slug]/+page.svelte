@@ -22,26 +22,26 @@
     </Row>
     <Row>
         <Col>
-            <h2>users</h2>
-            <h5>admin</h5>
+            <h2>Users</h2>
+            <h5>Administrators</h5>
             <ul>
-                {#each users as user (user.id)}
+                {#each users as user, index (index)}
                     {#if user.role === "Administrator"}
                         <li class="text-danger">{user.User.username}</li>
                     {/if}
                 {/each}
             </ul>
-            <h5>moderator</h5>
+            <h5>Moderators</h5>
             <ul>
-                {#each users as user (user.id)}
+                {#each users as user, index (index)}
                     {#if user.role === "Moderator"}
                         <li class="text-warning">{user.User.username}</li>
                     {/if}
                 {/each}
             </ul>
-            <h5>member</h5>
+            <h5>Members</h5>
             <ul>
-                {#each users as user (user.id)}
+                {#each users as user, index (index)}
                     {#if user.role === "Member"}
                         <li>{user.User.username}</li>
                     {/if}

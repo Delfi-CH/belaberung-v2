@@ -39,7 +39,6 @@ export async function login(username: string, password: string): Promise<LoginRe
 			username: username,
 			password: password
 		});
-		console.log(res);
 		localStorage.setItem('username', res.data.username);
 		localStorage.setItem('userID', res.data.id);
 		return [true, errorMessage];
@@ -55,7 +54,7 @@ export async function login(username: string, password: string): Promise<LoginRe
 			} else if (err.status === 500) {
 				errorMessage = 'Internal server error!';
 			} else if (err.status === 401) {
-				errorMessage = `Incorrect Password for ${username}!`;
+				errorMessage = `Incorrect Username or Password!`;
 			} else {
 				errorMessage = 'An unexpected error ocurred: ' + err;
 			}

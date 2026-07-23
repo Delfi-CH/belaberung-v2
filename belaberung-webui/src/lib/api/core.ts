@@ -10,23 +10,32 @@ export const api = axios.create({
 
 export async function getPublicRooms() {
   const res = await api.get("/rooms");
-  const uid = getUserID();
-  const res2 = await api.get(`/users/${uid}/joined`);
-
-  if (!res2.data) {
-    return res.data;
-  }
-
-  const joinedRoomIds = res2.data.map(e => e.RoomID);
-
-  return res.data.filter(room => !joinedRoomIds.includes(room.id));
+  const uid = getUserID()
+  const res2 = await api.get(`/users/${uid}/joined`)
+  const joinedRoomIDs = res2.data.map((roomUser)=> roomUser.Room.id)
+  const rooms = new Set()
+  
+  res.data.map((room)=>{
+	if (joinedRoomIDs.includes(room.id)) {
+		  return
+	  } else {
+      rooms.add(room)
+      return
+    }
+  })
+  return [...rooms]
 }
 export async function getJoinedRooms() {
 	const uid = getUserID()
 	const res = await api.get(`/users/${uid}/joined`)
-	if (res.data === null) {
-		return []
-	}
-	const joinedRooms = res.data.map((e)=> e.Room)
-	return joinedRooms
+	return res.data.map((roomUser)=> roomUser.Room)
+}
+
+export async function joinRoom(roomID: number|string) {
+    try {
+      await api.get(`/rooms/${roomID}/join`)
+      return "joined"
+    } catch (err) {
+      return "error: " + err
+    }
 }
