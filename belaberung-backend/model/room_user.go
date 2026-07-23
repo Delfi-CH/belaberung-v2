@@ -2,8 +2,8 @@ package model
 
 import (
 	"context"
-	"errors"
 	"database/sql"
+	"errors"
 
 	"github.com/uptrace/bun"
 )
@@ -66,6 +66,19 @@ func GetRoomUsersByRoomID(ctx context.Context, db *bun.DB, roomID int) ([]RoomUs
 	return room_users, nil
 }
 
+func GetRoomUsersByUserID(ctx context.Context, db *bun.DB, userID int) ([]RoomUser, error) {
+	var room_users []RoomUser
+
+	err := db.NewSelect().Model(&room_users).Where("user_id = ?", userID).Relation("User").Relation("Room").Scan(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return room_users, nil
+}
+
 func GetRoomUsersByRoomIDAndRole(ctx context.Context, db *bun.DB, roomID int, role RoomRole) ([]RoomUser, error) {
 	var room_users []RoomUser
 
@@ -110,7 +123,7 @@ func UpdateRoomUserRole(ctx context.Context, db *bun.DB, roomID, userID int, rol
 	return room_user, nil
 }
 
-func DeleteRoomUser(ctx context.Context, db *bun.DB, roomID, userID int) (error) {
+func DeleteRoomUser(ctx context.Context, db *bun.DB, roomID, userID int) error {
 	room_user := &RoomUser{
 		RoomID: roomID,
 		UserID: userID,

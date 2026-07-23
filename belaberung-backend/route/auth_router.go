@@ -48,7 +48,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		if err != nil {
 			c.String(http.StatusInternalServerError, "session store error: "+err.Error())
 			return
-		}	
+		}
 		c.JSON(http.StatusOK, dbUser)
 	})
 
@@ -66,7 +66,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 	})
 
-	//curl -b /tmp/cookies http://localhost:8080/auth/status 
+	//curl -b /tmp/cookies http://localhost:8080/auth/status
 
 	router.GET("/logout", func(c *gin.Context) {
 		session := sessions.Default(c)
@@ -81,7 +81,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 	})
 
 	//curl -c /tmp/cookies http://localhost:8080/auth/logout
-	
+
 	router.POST("/register", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
@@ -91,7 +91,7 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 
 		var user model.RegisterRequest
-		var err error 
+		var err error
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.String(http.StatusBadRequest, "bad request: "+err.Error())
 			return
