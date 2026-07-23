@@ -2,8 +2,8 @@ package route
 
 import (
 	"context"
-	"strconv"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"delfi.dev/belaberung-v2/model"
@@ -39,7 +39,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 				return
 			}
 			if room == nil {
-				c.String(http.StatusNotFound,"room not found")
+				c.String(http.StatusNotFound, "room not found")
 				return
 			}
 
@@ -72,7 +72,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		} else {
 			room, err = model.GetPrivateRoomById(context.Background(), db, id, password)
 		}
-		
+
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -108,7 +108,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		} else {
 			room, err = model.GetPrivateRoomById(context.Background(), db, id, password)
 		}
-		
+
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -174,7 +174,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		} else {
 			room, err = model.GetPrivateRoomById(context.Background(), db, id, password)
 		}
-		
+
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -200,7 +200,6 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/join"
 	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/join?password=1234"
 
-
 	router.POST("", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
@@ -210,7 +209,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		}
 
 		var room model.CreateRoomRequest
-		var err error 
+		var err error
 		if err := c.ShouldBindJSON(&room); err != nil {
 			c.String(http.StatusBadRequest, "bad request: "+err.Error())
 			return
@@ -294,7 +293,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		} else {
 			room, err = model.GetPrivateRoomById(context.Background(), db, roomID, password)
 		}
-		
+
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
@@ -303,7 +302,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 			c.String(http.StatusNotFound, "room not found")
 			return
 		}
-		
+
 		room_user, err := model.GetRoomUserByIDs(context.Background(), db, roomID, user.ID)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
@@ -320,7 +319,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 			return
 		}
 
-		err = model.DeleteRoom(context.Background(), db, roomID) 
+		err = model.DeleteRoom(context.Background(), db, roomID)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 			return

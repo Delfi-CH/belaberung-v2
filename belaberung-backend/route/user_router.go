@@ -254,38 +254,38 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 		detailType := req.RequestType
 
 		switch detailType {
-			case "username":
-				if req.Username != nil {
-					user, err = model.UpdateUserUsername(context.Background(), db, id, *req.Username)
-					break
-				} else {
-					c.String(http.StatusBadRequest, "bad request: "+ err.Error())
-					return
-				}
-			case "password":
-				if req.OldPassword != nil || req.NewPassword != nil {
-					user, err = model.UpdateUserPassword(context.Background(), db, id, *req.OldPassword, *req.NewPassword)
-					break
-				} else {
-					c.String(http.StatusBadRequest, "bad request: "+ err.Error())
-					return
-				}
-			case "biography":
-				if req.Biography != nil {
-					user, err = model.UpdateUserBiograpgy(context.Background(), db, id, *req.Biography)
-					break
-				} else {
-					c.String(http.StatusBadRequest, "bad request: "+ err.Error())
-					return
-				}
-			case "pronouns":
-				if req.Pronouns != nil {
-					user, err = model.UpdateUserPronouns(context.Background(), db, id, *req.Pronouns)
-					break
-				} else {
-					c.String(http.StatusBadRequest, "bad request: "+ err.Error())
-					return
-				}
+		case "username":
+			if req.Username != nil {
+				user, err = model.UpdateUserUsername(context.Background(), db, id, *req.Username)
+				break
+			} else {
+				c.String(http.StatusBadRequest, "bad request: "+err.Error())
+				return
+			}
+		case "password":
+			if req.OldPassword != nil || req.NewPassword != nil {
+				user, err = model.UpdateUserPassword(context.Background(), db, id, *req.OldPassword, *req.NewPassword)
+				break
+			} else {
+				c.String(http.StatusBadRequest, "bad request: "+err.Error())
+				return
+			}
+		case "biography":
+			if req.Biography != nil {
+				user, err = model.UpdateUserBiograpgy(context.Background(), db, id, *req.Biography)
+				break
+			} else {
+				c.String(http.StatusBadRequest, "bad request: "+err.Error())
+				return
+			}
+		case "pronouns":
+			if req.Pronouns != nil {
+				user, err = model.UpdateUserPronouns(context.Background(), db, id, *req.Pronouns)
+				break
+			} else {
+				c.String(http.StatusBadRequest, "bad request: "+err.Error())
+				return
+			}
 		}
 
 		if err != nil {
@@ -298,7 +298,7 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
-		
+
 		c.JSON(http.StatusOK, &user)
 	})
 

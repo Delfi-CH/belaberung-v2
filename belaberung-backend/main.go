@@ -7,11 +7,12 @@ import (
 
 	"delfi.dev/belaberung-v2/db"
 	"delfi.dev/belaberung-v2/route"
+	"delfi.dev/belaberung-v2/ws"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -30,6 +31,9 @@ func main() {
 	defer db.Close()
 
 	r := gin.Default()
+
+	hub := ws.NewHub()
+	go hub.Run()
 
 	secret, exists := os.LookupEnv("BELABERUNG_SESSION_SECRET")
 
@@ -67,16 +71,16 @@ func main() {
 
 	store.Options(sessions.Options{
 		HttpOnly: true,
-		MaxAge: 86400,
-		Path: "/",
+		MaxAge:   86400,
+		Path:     "/",
 	})
 
 	r.Use(sessions.Sessions("redis", store))
-	
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5173",},
-    	AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-    	AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
 
@@ -93,5 +97,41 @@ func main() {
 		c.String(http.StatusOK, "hello, world")
 	})
 
+	r.GET("/ws", ws.Handler(hub, db))
+
 	r.Run()
 }
+
+/* todo
+func CreateMessage(
+	hub *ws.Hub,
+	message models.Message,
+) error {
+
+
+	err := db.NewInsert().
+		Model(&message).
+		Scan(context.Background())
+
+
+	if err != nil {
+		return err
+	}
+
+
+	hub.Broadcast(
+		ws.Message{
+			ID: message.ID,
+			Content: message.Content,
+			UserID: message.UserID,
+			RoomID: message.RoomID,
+			Timestamp: message.Timestamp,
+		},
+	)
+
+
+	return nil
+}
+
+
+*/
