@@ -27,10 +27,11 @@
                 description: description,
             }
             try {
-                await api.post("/rooms", data)
-                goto(resolve("/rooms"))
+                const room = await api.post("/rooms", data)
+                //@ts-expect-error womp womp
+                goto(resolve("/room/" + room.data.id))
             } catch {
-                //
+                alert("An unexpected Error ocurred.")
             }
         }
     }
