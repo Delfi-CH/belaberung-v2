@@ -70,6 +70,8 @@ func GetRecentMessages(ctx context.Context, db *bun.DB, roomID int, limit int, c
 
 	query := db.NewSelect().
 		Model(&messages).
+		Relation("User").
+		Relation("Room").
 		Where("room_id = ?", roomID).
 		Order("id DESC").
 		Limit(limit)

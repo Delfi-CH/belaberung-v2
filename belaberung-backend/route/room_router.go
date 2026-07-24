@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"delfi.dev/belaberung-v2/model"
+	"delfi.dev/belaberung-v2/ws"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/uptrace/bun"
@@ -199,6 +200,38 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 
 	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/join"
 	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/join?password=1234"
+
+	router.GET("/:id/messages", func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionUsername := session.Get("username")
+		if sessionUsername == nil {
+			c.String(http.StatusUnauthorized, "not logged in")
+			return
+		}
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		limit := 50
+		position := 0
+
+		messages, err := model.GetRecentMessages(context.Background(), db, id, limit, position)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		convertedMessages := []ws.Message{}
+
+		for _, message := range messages {
+			convertedMessages = append(convertedMessages, *ws.FromDatabaseMessage(&message))
+		}
+
+		c.JSON(http.StatusOK, convertedMessages)
+	})
 
 	router.POST("", func(c *gin.Context) {
 		session := sessions.Default(c)

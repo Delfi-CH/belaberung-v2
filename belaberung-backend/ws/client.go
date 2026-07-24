@@ -1,11 +1,14 @@
 package ws
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"time"
 
+	"delfi.dev/belaberung-v2/model"
 	"github.com/gorilla/websocket"
+	"github.com/uptrace/bun"
 )
 
 type client struct {
@@ -35,7 +38,7 @@ func newClient(hub *Hub, conn *websocket.Conn) *client {
 // readPump pumps messages from the websocket connection to the hub.
 //
 // There must only ever be one reader for a websocket connection.
-func (c *client) readPump() {
+func (c *client) readPump(db *bun.DB) {
 	defer func() {
 
 		// Remove this client from all rooms.
@@ -89,6 +92,11 @@ func (c *client) readPump() {
 			continue
 		}
 
+		_, err = model.CreateMessage(context.Background(), db, message.Content, message.Attachment, message.UserID, message.RoomID)
+		if err != nil {
+			log.Println(err)
+			break
+		}
 
 		/*
 		   IMPORTANT:

@@ -44,6 +44,10 @@ func Handler(hub *Hub, db *bun.DB) gin.HandlerFunc {
 		}
 
 		tmpRoomIDs, err := model.GetRoomUsersByUserID(context.Background(), db, userID.ID)
+		if err != nil {
+			conn.Close()
+			return
+		}
 
 		roomIDs := []int{}
 
@@ -72,6 +76,6 @@ func Handler(hub *Hub, db *bun.DB) gin.HandlerFunc {
 
 		go client.writePump()
 
-		go client.readPump()
+		go client.readPump(db)
 	}
 }
