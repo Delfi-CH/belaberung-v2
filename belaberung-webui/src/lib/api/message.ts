@@ -1,3 +1,5 @@
+import { toggleColorMode } from "@sveltestrap/sveltestrap";
+
 export enum MessageAttachmentType {
   None = "None",
   Mention = "Mention",
@@ -29,6 +31,7 @@ export class Message {
   attachment?: MessageAttachment;
   timestamp: Date;
   username: string;
+  role: string;
   userId: number;
   roomId: number;
 
@@ -36,6 +39,7 @@ export class Message {
     content: string;
     timestamp: Date | string;
     username: string;
+    role: string;
     userID: number;
     roomID: number;
     attachment?: MessageAttachment;
@@ -49,6 +53,7 @@ export class Message {
         : new Date(params.timestamp);
     this.userId = params.userID;
     this.roomId = params.roomID;
+    this.role = params.role
   }
 
   static fromJson(json: any): Message {
@@ -58,6 +63,7 @@ export class Message {
       username: json.username,
       userID: json.user_id,
       roomID: json.room_id,
+      role: json.role,
       attachment: json.attachment
         ? new MessageAttachment(
             json.attachment.type,
@@ -73,6 +79,7 @@ export class Message {
       attachment: this.attachment,
       timestamp: this.timestamp.toISOString(),
       username: this.username,
+      role: this.role,
       user_id: this.userId,
       room_id: this.roomId,
     };

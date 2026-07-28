@@ -2,6 +2,7 @@
 	import { getUserID, getUsername } from "$lib/api/auth.js";
 	import { api, createWebsocket, loadInitialMessages, sendMessage, streamMessages } from "$lib/api/core";
 	import { MessageAttachment, MessageAttachmentType, Message } from "$lib/api/message.js";
+	import MessageViewer from "$lib/components/MessageViewer.svelte";
     import { Container, Row, Col, Button } from "@sveltestrap/sveltestrap";
 	import { onMount } from "svelte";
     let { data } = $props();
@@ -15,12 +16,14 @@
         users = tmpUsers.data
         const tmpMessages = await loadInitialMessages(id)
         messages = [...messages, ...tmpMessages]
+        messages.sort((a, b) => a.timestamp - b.timestamp)
     })
 
     onMount(()=>{
         ws = createWebsocket()
         streamMessages(ws, (message)=>{
             messages = [...messages, message]
+            messages.sort((a, b) => a.timestamp - b.timestamp)
         })
 
     })
@@ -30,16 +33,11 @@
 <Container>
     <h1>{data.post.name}</h1>
     <Row>
-        <Col>
-            {#each messages as message, index (index)}
-                <p>{message.username}</p>
-                <p>{message.content}</p>
-            {/each}
+        <div class="messages">
+            <MessageViewer messages={messages}></MessageViewer>
             <Button onclick={()=>sendMessage(ws, "test", getUsername(), Number(getUserID()), id, new MessageAttachment(MessageAttachmentType.None, null))}>test</Button>
-        </Col>
-    </Row>
-    <Row>
-        <Col>
+        </div>
+        <div class="users">
             <h2>Users</h2>
             <h5>Administrators</h5>
             <ul>
@@ -65,6 +63,23 @@
                     {/if}
                 {/each}
             </ul>
-        </Col>
+        </div>
     </Row>
 </Container>
+
+<style>
+    .messages {
+        width: 100%;
+        @media (width >= 768px) {
+            width: 70%;
+        }
+    }
+
+    .users {
+        display: none;
+        @media (width >= 768px) {
+            display: block;
+            width: 30%;
+        }
+    }
+</style>

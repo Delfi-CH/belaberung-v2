@@ -227,11 +227,49 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		convertedMessages := []ws.Message{}
 
 		for _, message := range messages {
-			convertedMessages = append(convertedMessages, *ws.FromDatabaseMessage(&message))
+			convertedMessage, err := ws.FromDatabaseMessage(&message, db)
+			if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+			convertedMessages = append(convertedMessages, *convertedMessage)
 		}
 
 		c.JSON(http.StatusOK, convertedMessages)
 	})
+
+	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/messages"
+
+	router.GET("/:id/me", func(c *gin.Context) {
+		session := sessions.Default(c)
+		sessionUsername := session.Get("username")
+		if sessionUsername == nil {
+			c.String(http.StatusUnauthorized, "not logged in")
+			return
+		}
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		user, err := model.GetUserByUsername(context.Background(), db, sessionUsername.(string))
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		roomUser, err := model.GetRoomUserByIDs(context.Background(), db, id, user.ID)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		
+		c.JSON(http.StatusOK, roomUser)
+	})
+
+	//curl -b /tmp/cookies "http://localhost:8080/rooms/1/me"
 
 	router.POST("", func(c *gin.Context) {
 		session := sessions.Default(c)

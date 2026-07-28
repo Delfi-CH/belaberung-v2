@@ -44,22 +44,22 @@ export async function joinRoom(roomID: number | string) {
 
 export async function loadInitialMessages(roomID: number) {
 	try {
-		const res = await api.get(`/rooms/${roomID}/messages`)
+		const res = await api.get(`/rooms/${roomID}/messages`);
 
-		return res.data.map(element => {
-			return Message.fromJson(element)
+		return res.data.map((element) => {
+			return Message.fromJson(element);
 		});
 	} catch (err) {
-		console.log(err)
-		return []
+		console.log(err);
+		return [];
 	}
-} 
+}
 
 export function createWebsocket() {
 	const ws = new WebSocket(backendURL + '/ws');
-	ws.addEventListener("open", ()=>{
-		return
-	})
+	ws.addEventListener('open', () => {
+		return;
+	});
 	return ws;
 }
 
@@ -71,20 +71,25 @@ export function sendMessage(
 	roomID: number,
 	attachment?: MessageAttachment
 ) {
-	const msg = new Message({
-		content: content,
-		timestamp: new Date(),
-		username: username,
-		userID: userID,
-		roomID: roomID,
-		attachment: attachment
+	api.get(`/rooms/${roomID}/me`).then((res) => {
+		const role = res.data.role
+		console.log(res.data.role)
+		const msg = new Message({
+			content: content,
+			timestamp: new Date(),
+			username: username,
+			userID: userID,
+			role: role,
+			roomID: roomID,
+			attachment: attachment
+		});
+		ws.send(msg.toString());
 	});
-	ws.send(msg.toString());
 }
 
 export function streamMessages(ws: WebSocket, callback: (message: Message) => void): void {
 	ws.addEventListener('message', (event) => {
-			const message = Message.fromJson(JSON.parse(event.data));
-			callback(message);
+		const message = Message.fromJson(JSON.parse(event.data));
+		callback(message);
 	});
 }
