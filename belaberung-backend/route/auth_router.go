@@ -38,6 +38,10 @@ func InitAuthRouter(router *gin.RouterGroup, db *bun.DB) {
 			return
 		}
 
+		if dbUser.Suspended == true {
+			c.String(http.StatusForbidden, "Your account has been suspended")
+		}
+
 		if !crypt.CheckPassword(dbUser.Password, user.Password) {
 			c.String(http.StatusUnauthorized, "false password")
 			return
