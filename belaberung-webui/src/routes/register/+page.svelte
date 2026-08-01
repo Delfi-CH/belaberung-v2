@@ -10,6 +10,7 @@
     let showError = $state(false)
 
 	async function handleSubmit() {
+		username = username.trim()
 		const [doRedirect, errorMessageRes] = await register(username, password);
 		errorMessage = errorMessageRes;
         showError = !doRedirect
@@ -21,7 +22,7 @@
 
 <div>
 	<h1>Register</h1>
-	<form on:submit={async () => await handleSubmit()}>
+	<form onsubmit={async () => await handleSubmit()}>
 			<label for="username">Username</label><input
 				type="username"
 				id="username"

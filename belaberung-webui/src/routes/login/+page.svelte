@@ -10,6 +10,7 @@
     let showError = $state(false)
 
 	async function handleSubmit() {
+		username = username.trim()	
 		const [doRedirect, errorMessageRes] = await login(username, password);
 		errorMessage = errorMessageRes;
         showError = !doRedirect

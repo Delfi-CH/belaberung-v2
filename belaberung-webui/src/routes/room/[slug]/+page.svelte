@@ -3,7 +3,7 @@
 	import { api, createWebsocket, loadInitialMessages, sendMessage, streamMessages } from "$lib/api/core";
 	import { MessageAttachment, MessageAttachmentType, Message } from "$lib/api/message.js";
 	import MessageViewer from "$lib/components/MessageViewer.svelte";
-    import { Container, Row, Col, Button } from "@sveltestrap/sveltestrap";
+    import { Container, Row, Button } from "@sveltestrap/sveltestrap";
 	import { onMount } from "svelte";
     let { data } = $props();
     let id = $derived(data.post.id)
