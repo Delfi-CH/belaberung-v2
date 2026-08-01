@@ -7,13 +7,13 @@
 	let username = $state('');
 	let password = $state('');
 	let errorMessage = $state('');
-    let showError = $state(false)
+	let showError = $state(false);
 
 	async function handleSubmit() {
-		username = username.trim()
+		username = username.trim();
 		const [doRedirect, errorMessageRes] = await register(username, password);
 		errorMessage = errorMessageRes;
-        showError = !doRedirect
+		showError = !doRedirect;
 		if (doRedirect) {
 			await goto(resolve('/'));
 		}
@@ -23,21 +23,22 @@
 <div>
 	<h1>Register</h1>
 	<form onsubmit={async () => await handleSubmit()}>
-			<label for="username">Username</label><input
-				type="username"
-				id="username"
-				required
-				bind:value={username}
-			/>
-			<label for="password">Password</label><input
-				type="password"
-				id="password"
-				required
-				bind:value={password}
-			/>
-			<button type="submit">Sign Up</button>
-			<p>Alreay have an account? Log in <a href={resolve("/login")}>here</a></p>
+		<label for="username">Username</label><input
+			type="username"
+			id="username"
+			required
+			bind:value={username}
+		/>
+		<label for="password">Password</label><input
+			type="password"
+			id="password"
+			required
+			bind:value={password}
+		/>
+		<button type="submit">Sign Up</button>
+		<p>Alreay have an account? Log in <a href={resolve('/login')}>here</a></p>
 
-            <Alert isVisible={showError} message={errorMessage} onDismiss={()=> showError = !showError}></Alert>
+		<Alert isVisible={showError} message={errorMessage} onDismiss={() => (showError = !showError)}
+		></Alert>
 	</form>
 </div>

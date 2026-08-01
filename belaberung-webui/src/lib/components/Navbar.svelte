@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		Nav,
-		Navbar,
-		NavbarBrand,
-		NavbarToggler,
-		Collapse,
-	} from '@sveltestrap/sveltestrap';
+	import { Nav, Navbar, NavbarBrand, NavbarToggler, Collapse } from '@sveltestrap/sveltestrap';
 	import { page } from '$app/state';
 	import { getUsername, isLoggedIn } from '$lib/api/auth';
 	import NavbarInsides from './NavbarInsides.svelte';
@@ -39,21 +33,21 @@
 			No, i dont know why.
 		-->
 		{#if isToggled}
-		<Collapse isOpen={true} navbar>
-			<Nav class="text-end" navbar>
-				<NavbarInsides page={page} username={username} isUserLoggedIn={isUserLoggedIn}></NavbarInsides>
-			</Nav>
-		</Collapse>
+			<Collapse isOpen={true} navbar>
+				<Nav class="text-end" navbar>
+					<NavbarInsides {page} {username} {isUserLoggedIn}></NavbarInsides>
+				</Nav>
+			</Collapse>
 		{:else}
-		<Collapse isOpen={false} navbar>
-			<Nav class="text-end" navbar>
-				<NavbarInsides page={page} username={username} isUserLoggedIn={isUserLoggedIn}></NavbarInsides>
-			</Nav>
-		</Collapse>
+			<Collapse isOpen={false} navbar>
+				<Nav class="text-end" navbar>
+					<NavbarInsides {page} {username} {isUserLoggedIn}></NavbarInsides>
+				</Nav>
+			</Collapse>
 		{/if}
-		{:else}
+	{:else}
 		<Nav pills>
-			<NavbarInsides page={page} username={username} isUserLoggedIn={isUserLoggedIn}></NavbarInsides>
+			<NavbarInsides {page} {username} {isUserLoggedIn}></NavbarInsides>
 		</Nav>
 	{/if}
 </Navbar>

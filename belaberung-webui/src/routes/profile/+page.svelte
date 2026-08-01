@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-    import { resolve } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { getUserID, getUsername } from '$lib/api/auth';
 	import { api } from '$lib/api/core';
 	import ErrorNotification from '$lib/components/ErrorNotification.svelte';
@@ -32,7 +32,7 @@
 				type: 'username',
 				username: newUsername
 			});
-            goto(resolve("/logout"))
+			goto(resolve('/logout'));
 		} catch (err) {
 			showerr = true;
 			errmsg = err;
@@ -46,7 +46,7 @@
 				oldPassword: oldPassword,
 				newPassword: newPassword
 			});
-            goto(resolve("/logout"))
+			goto(resolve('/logout'));
 		} catch (err) {
 			showerr = true;
 			errmsg = err;
@@ -83,17 +83,17 @@
 		<h1>Your Profile</h1>
 		<Col>
 			<p>Username: {getUsername()}</p>
-            <Form>
-                <Label>Username</Label>
-                <Input type="text" bind:value={newUsername} required></Input>
-                <Button type="submit" onclick={async () => await saveUsername()}>Change Username</Button>
-            </Form>
-            <Form>
-                <Label>Old Password</Label><Input type="password" bind:value={oldPassword} required></Input>
-                <Label>New Password</Label><Input type="password" bind:value={newPassword} required></Input>
-                <Button type="submit" onclick={async () => await savePassword()}>Change Password</Button>
-            </Form>
-			
+			<Form>
+				<Label>Username</Label>
+				<Input type="text" bind:value={newUsername} required></Input>
+				<Button type="submit" onclick={async () => await saveUsername()}>Change Username</Button>
+			</Form>
+			<Form>
+				<Label>Old Password</Label><Input type="password" bind:value={oldPassword} required></Input>
+				<Label>New Password</Label><Input type="password" bind:value={newPassword} required></Input>
+				<Button type="submit" onclick={async () => await savePassword()}>Change Password</Button>
+			</Form>
+
 			<Form>
 				<p>Biography:</p>
 				<Input
@@ -102,7 +102,7 @@
 					placeholder="No biograpgy..."
 					max="1024"
 					rows="5"
-                    required
+					required
 				></Input>
 				<p><span class={newBioLength > 1024 ? 'text-danger' : ''}>{newBioLength}</span>/{1024}</p>
 				<Button
@@ -119,7 +119,7 @@
 					placeholder="No pronouns..."
 					max="64"
 					rows="1"
-                    required
+					required
 				></Input>
 				<p><span class={newProLength > 64 ? 'text-danger' : ''}>{newProLength}</span>/{64}</p>
 				<Button onclick={async () => await savePronouns()} disabled={newProLength > 64}

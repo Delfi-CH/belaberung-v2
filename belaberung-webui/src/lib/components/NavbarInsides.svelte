@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {
+	import {
 		NavItem,
 		NavLink,
 		Dropdown,
@@ -8,7 +8,7 @@
 		DropdownToggle,
 		Icon
 	} from '@sveltestrap/sveltestrap';
-    let { isUserLoggedIn, page, username} = $props()
+	let { isUserLoggedIn, page, username } = $props();
 </script>
 
 {#if isUserLoggedIn}
@@ -21,7 +21,7 @@
 	<Dropdown autoClose="manual" isOpen={false}>
 		<DropdownToggle caret><Icon name="person-circle" /> {username}</DropdownToggle>
 		<DropdownMenu>
-            <DropdownItem href="/rooms/new">Create a room</DropdownItem>
+			<DropdownItem href="/rooms/new">Create a room</DropdownItem>
 			<DropdownItem href="/profile">Your Profile</DropdownItem>
 			<DropdownItem href="/logout" class="bg-danger text-white">Logout</DropdownItem>
 		</DropdownMenu>

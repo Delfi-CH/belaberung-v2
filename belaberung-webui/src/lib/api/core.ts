@@ -72,8 +72,8 @@ export function sendMessage(
 	attachment?: MessageAttachment
 ) {
 	api.get(`/rooms/${roomID}/me`).then((res) => {
-		const role = res.data.role
-		console.log(res.data.role)
+		const role = res.data.role;
+		console.log(res.data.role);
 		const msg = new Message({
 			content: content,
 			timestamp: new Date(),

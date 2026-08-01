@@ -229,9 +229,9 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		for _, message := range messages {
 			convertedMessage, err := ws.FromDatabaseMessage(&message, db)
 			if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
-			return
-		}
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
 			convertedMessages = append(convertedMessages, *convertedMessage)
 		}
 
@@ -265,7 +265,7 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
-		
+
 		c.JSON(http.StatusOK, roomUser)
 	})
 

@@ -3,9 +3,8 @@
 </script>
 
 {#if isVisible}
-
-<div>
-	<p>{message}</p>
-	<button onclick={()=> onDismiss()}>Dismiss</button>
-</div>
+	<div>
+		<p>{message}</p>
+		<button onclick={() => onDismiss()}>Dismiss</button>
+	</div>
 {/if}
