@@ -22,7 +22,7 @@
 		<DropdownToggle caret><Icon name="person-circle" /> {username}</DropdownToggle>
 		<DropdownMenu>
             <DropdownItem href="/rooms/new">Create a room</DropdownItem>
-			<DropdownItem>Your Profile</DropdownItem>
+			<DropdownItem href="/profile">Your Profile</DropdownItem>
 			<DropdownItem href="/logout" class="bg-danger text-white">Logout</DropdownItem>
 		</DropdownMenu>
 	</Dropdown>
