@@ -3,9 +3,10 @@
 	import { api, createWebsocket, loadInitialMessages, sendMessage, streamMessages } from "$lib/api/core";
 	import { MessageAttachment, MessageAttachmentType, Message } from "$lib/api/message.js";
 	import MessageViewer from "$lib/components/MessageViewer.svelte";
-    import { Container, Row, Button } from "@sveltestrap/sveltestrap";
+    import { Container, Row, Button, Form, Input } from "@sveltestrap/sveltestrap";
 	import { onMount } from "svelte";
     let { data } = $props();
+    let messageContent = $state("")
     let id = $derived(data.post.id)
     let users = $state([])
     let messages: Message[] = $state([])
@@ -35,7 +36,11 @@
     <Row>
         <div class="messages">
             <MessageViewer messages={messages}></MessageViewer>
-            <Button onclick={()=>sendMessage(ws, "test", getUsername(), Number(getUserID()), id, new MessageAttachment(MessageAttachmentType.None, null))}>test</Button>
+            <Form class="d-flex gap-2 align-items-center">
+                <Input type="text" bind:value={messageContent} placeholder="Type your message here"></Input>
+                <Button onclick={()=>sendMessage(ws, messageContent, getUsername(), Number(getUserID()), id, new MessageAttachment(MessageAttachmentType.None, null))} type="submit">test</Button>
+            </Form>
+            
         </div>
         <div class="users">
             <h2>Users</h2>
