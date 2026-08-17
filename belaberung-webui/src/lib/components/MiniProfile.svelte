@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getUserDetails } from "$lib/api/core";
 	import { onMount } from "svelte";
-    import { Card, CardBody, CardHeader, CardTitle } from "@sveltestrap/sveltestrap"
+    import { Card, CardBody, CardHeader } from "@sveltestrap/sveltestrap"
 
     let { userID } = $props()
     let userData = $state({})
@@ -10,7 +10,11 @@
     onMount(async ()=> {
         const tmpUserData = await getUserDetails(userID)
         userData = tmpUserData
-        biography = tmpUserData.biography.split("\n")
+        if (tmpUserData.biography !== "") {
+            biography = tmpUserData.biography.split("\n")
+        } else {
+            biography = []
+        }
     })
 </script>
 
@@ -18,13 +22,17 @@
 <Card>
     <CardHeader>
         <p>{userData.username}@{userData.domain}</p>
-        <p class="pronouns">{userData.pronouns}</p>
+        <p class="pronouns">{userData.pronouns === "" ? "No pronouns set": userData.pronouns}</p>
     </CardHeader>
     <CardBody>
+        {#if biography.length >= 1}
         {#each biography as line, index (index)}
             <span>{line}</span>
             <br>
         {/each}
+        {:else}
+            <p>No biography set</p>
+        {/if}
     </CardBody>
 </Card>
 </div>

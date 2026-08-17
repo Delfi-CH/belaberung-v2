@@ -11,12 +11,16 @@
 	import MessageViewer from '$lib/components/MessageViewer.svelte';
 	import { Container, Row, Button, Form, Input } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
+	import MiniProfile from '$lib/components/MiniProfile.svelte';
+
 	let { data } = $props();
 	let messageContent = $state('');
 	let id = $derived(data.post.id);
 	let users = $state([]);
 	let messages: Message[] = $state([]);
 	let ws: WebSocket;
+	let showMiniProfile = $state(false);
+	let miniProfileUserID = $state(0);
 
 	onMount(async () => {
 		const tmpUsers = await api.get(`/rooms/${id}/users`);
@@ -51,8 +55,9 @@
 							Number(getUserID()),
 							id,
 							new MessageAttachment(MessageAttachmentType.None, null)
-						)
-						messageContent = ""}}
+						);
+						messageContent = '';
+					}}
 					type="submit">test</Button
 				>
 			</Form>
@@ -63,7 +68,23 @@
 			<ul>
 				{#each users as user, index (index)}
 					{#if user.role === 'Administrator'}
-						<li class="text-danger">{user.User.username}</li>
+						<li
+							onclick={() => {
+								showMiniProfile = !showMiniProfile;
+								miniProfileUserID = user.User.id;
+							}}
+							onkeydown={(e) => {}}
+							role="button"
+							tabindex="0"
+							class="text-danger"
+						>
+							{user.User.username}
+						</li>
+						{#if showMiniProfile && user.role === 'Administrator' && user.User.id === miniProfileUserID}
+						<div style="position: relative;">
+							<MiniProfile userID={miniProfileUserID}></MiniProfile>
+						</div>
+						{/if}
 					{/if}
 				{/each}
 			</ul>
@@ -71,7 +92,23 @@
 			<ul>
 				{#each users as user, index (index)}
 					{#if user.role === 'Moderator'}
-						<li class="text-warning">{user.User.username}</li>
+						<li
+							onclick={() => {
+								showMiniProfile = !showMiniProfile;
+								miniProfileUserID = user.User.id;
+							}}
+							onkeydown={(e) => {}}
+							role="button"
+							tabindex="0"
+							class="text-warning"
+						>
+							{user.User.username}
+						</li>
+						{#if showMiniProfile && user.role === 'Moderator' && user.User.id === miniProfileUserID}
+						<div style="position: relative;">
+							<MiniProfile userID={miniProfileUserID}></MiniProfile>
+						</div>
+						{/if}
 					{/if}
 				{/each}
 			</ul>
@@ -79,7 +116,22 @@
 			<ul>
 				{#each users as user, index (index)}
 					{#if user.role === 'Member'}
-						<li>{user.User.username}</li>
+						<li
+							onclick={() => {
+								showMiniProfile = !showMiniProfile;
+								miniProfileUserID = user.User.id;
+							}}
+							onkeydown={(e) => {}}
+							role="button"
+							tabindex="0"
+						>
+							{user.User.username}
+						</li>
+						{#if showMiniProfile && user.role === 'Member' && user.User.id === miniProfileUserID}
+						<div style="position: relative;">
+							<MiniProfile userID={miniProfileUserID}></MiniProfile>
+						</div>
+						{/if}
 					{/if}
 				{/each}
 			</ul>
