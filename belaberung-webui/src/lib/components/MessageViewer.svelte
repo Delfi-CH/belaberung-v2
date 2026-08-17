@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Message } from '$lib/api/message';
+	import MiniProfile from './MiniProfile.svelte';
 
 	let { messages } = $props();
 
@@ -13,15 +14,39 @@
 				return '';
 		}
 	}
+
+	let showMiniProfile = $state(false)
+	let miniProfileUserID = $state(0)
+	let miniProfileMessageIndex = $state(-1)
 </script>
 
 <div class="view">
 	{#each messages as message, index (index)}
 		<p>
-			<span class={determineCSSClass(message)}>{message.username}</span>
+			<span class={determineCSSClass(message)} onclick={()=>{
+				showMiniProfile = !showMiniProfile
+				miniProfileUserID = message.userId
+				miniProfileMessageIndex = index
+			}}
+			onkeydown={(e)=>{
+				 
+			}}
+			role="button"
+			tabindex=0
+			
+			>{message.username}</span>
 			<span class="date">sent at {message.timestamp.toLocaleString()}</span>
 		</p>
+		{#if showMiniProfile && miniProfileMessageIndex === index}
+		<div style="position: relative;">
+			<MiniProfile userID={miniProfileUserID}></MiniProfile>
+		</div>
+		{/if}
 		<p>{message.content}</p>
+		
+		
+			
+
 	{/each}
 </div>
 

@@ -43,7 +43,7 @@
 			<Form class="d-flex gap-2 align-items-center">
 				<Input type="text" bind:value={messageContent} placeholder="Type your message here"></Input>
 				<Button
-					onclick={() =>
+					onclick={() => {
 						sendMessage(
 							ws,
 							messageContent,
@@ -51,7 +51,8 @@
 							Number(getUserID()),
 							id,
 							new MessageAttachment(MessageAttachmentType.None, null)
-						)}
+						)
+						messageContent = ""}}
 					type="submit">test</Button
 				>
 			</Form>

@@ -93,3 +93,12 @@ export function streamMessages(ws: WebSocket, callback: (message: Message) => vo
 		callback(message);
 	});
 }
+
+export async function getUserDetails(userID: number | string) {
+	try {
+		const res = await api.get(`/users/${userID}`);
+		return res.data
+	} catch (err) {
+		return 'error: ' + err;
+	}
+}

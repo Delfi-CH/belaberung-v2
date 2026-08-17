@@ -96,7 +96,6 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 	router.GET("/:id", func(c *gin.Context) {
 		session := sessions.Default(c)
 		sessionUsername := session.Get("username")
-		sessionIsAdministrator := session.Get("admin")
 
 		if sessionUsername == nil {
 			c.String(http.StatusUnauthorized, "not logged in")
@@ -117,11 +116,6 @@ func InitUserRouter(router *gin.RouterGroup, db *bun.DB) {
 
 		if user == nil {
 			c.String(http.StatusNotFound, "user not found")
-			return
-		}
-
-		if user.Username != sessionUsername || sessionIsAdministrator == false {
-			c.String(http.StatusForbidden, "invailid permissions")
 			return
 		}
 
