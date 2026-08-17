@@ -1,0 +1,24 @@
+{
+  "cwd": "/home/delfi/softwaredev/belaberung-v2/belaberung-gui-android",
+  "type": [
+    "capacitor"
+  ],
+  "name": "belaberung",
+  "pkg": "dev.delfi.belaberung-gui-android",
+  "framework": "svelte",
+  "template": "blank",
+  "cssPreProcessor": false,
+  "bundler": "vite",
+  "capacitor": {
+    "platforms": [
+      "android"
+    ]
+  },
+  "theming": {
+    "customColor": false,
+    "color": "#007aff",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}
