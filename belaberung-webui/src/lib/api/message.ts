@@ -1,5 +1,3 @@
-import { toggleColorMode } from '@sveltestrap/sveltestrap';
-
 export enum MessageAttachmentType {
 	None = 'None',
 	Mention = 'Mention',
