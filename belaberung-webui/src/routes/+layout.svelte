@@ -5,12 +5,13 @@
 
 	let { children } = $props();
 	let theme = $state('zephyr');
+	const themeURLBase = import.meta.env.DEV ? "../../node_modules/bootswatch/dist/" : "/style/"
 
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<link rel="stylesheet" href={`../../node_modules/bootswatch/dist/${theme}/bootstrap.css`} />
+	<link rel="stylesheet" href={`${themeURLBase}${theme}/bootstrap.css`} />
 </svelte:head>
 <Navbar></Navbar>
 {@render children()}

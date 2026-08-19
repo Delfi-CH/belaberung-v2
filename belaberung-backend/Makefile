@@ -17,4 +17,4 @@ format:
 	go mod tidy 
 
 clean: 
-	rm -rf bin vendor
+	rm --recursive --force bin vendor

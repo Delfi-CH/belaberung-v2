@@ -72,8 +72,8 @@ services:
       start_period: 30s
   webui:
     build:
-      context: ./belaberung-webui
-      dockerfile: ../Dockerfiles/Dockerfile.webui # or ../Dockerfiles/Dockerfile.webui.rootless for rootless builds
+      context: .
+      dockerfile: ./Dockerfiles/Dockerfile.webui # or ./Dockerfiles/Dockerfile.webui.rootless for rootless builds
     container_name: belaberung-webui
     restart: unless-stopped
     ports:

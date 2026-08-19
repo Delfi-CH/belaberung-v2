@@ -1,3 +1,5 @@
+# Build a binary    
+
 FROM golang:alpine AS builder
 
 RUN apk update && apk add make
@@ -10,7 +12,7 @@ ENV GIN_MODE=release
 
 RUN make
 
-
+# Run the built binary
 
 FROM golang:alpine AS production
 
