@@ -23,7 +23,10 @@ export async function getPublicRooms() {
 	const api = createAPI(getBackendUrl())
 	const res = await api.get('/rooms');
 	const uid = getUserID();
-	const res2 = await api.get(`/users/${uid}/joined`);
+	let res2 = await api.get(`/users/${uid}/joined`);
+	if (!res2.data) {
+		res2.data = []
+	}
 	const joinedRoomIDs = res2.data.map((roomUser: any) => roomUser.Room.id);
 	const rooms = new Set();
 
