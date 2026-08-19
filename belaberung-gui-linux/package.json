@@ -21,6 +21,7 @@
         "@gtkx/css": "^1.2.0",
         "@gtkx/react": "^1.2.0",
         "@gtkx/runtime": "^1.2.0",
+        "axios": "^1.19.0",
         "react": "^19.2.8"
     },
     "devDependencies": {

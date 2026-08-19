@@ -1,7 +1,7 @@
 import { defineConfig } from "@gtkx/config";
 
 export default defineConfig({
-    libraries: ["Gtk-4.0"],
+    libraries: ["Gtk-4.0", "Adw-1"],
     applicationId: "dev.delfi.belaberung-gui-linux",
     deploy: {
         name: "Belaberung Gui Linux",
