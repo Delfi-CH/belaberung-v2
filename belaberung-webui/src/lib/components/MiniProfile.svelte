@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getUserDetails } from "$lib/api/core";
+	import { getUserDetails } from "belaberung-client-libs";
 	import { onMount } from "svelte";
     import { Card, CardBody, CardHeader } from "@sveltestrap/sveltestrap"
 

@@ -29,6 +29,9 @@ importers:
       '@capacitor/status-bar':
         specifier: ^8.0.3
         version: 8.0.3(@capacitor/core@8.5.0)
+      belaberung-client-libs:
+        specifier: link:../belaberung-client-libs
+        version: link:../belaberung-client-libs
       dom7:
         specifier: ^4.0.6
         version: 4.0.6

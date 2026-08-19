@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Form, Input, Button, Container, Row, Col, Label } from '@sveltestrap/sveltestrap';
-	import { api } from '$lib/api/core';
+	import { createAPI, getBackendUrl } from 'belaberung-client-libs';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	let name = $state('');
@@ -10,6 +10,7 @@
 
 	async function handleSubmit() {
 		let data;
+		const api = createAPI(getBackendUrl())
 		if (isPrivate && password != '') {
 			data = {
 				name: name,

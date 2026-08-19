@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getJoinedRooms, getPublicRooms, joinRoom } from '$lib/api/core';
+	import { getJoinedRooms, getPublicRooms, joinRoom } from 'belaberung-client-libs';
 	import { onMount } from 'svelte';
 	import {
 		Container,

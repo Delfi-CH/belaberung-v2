@@ -2,21 +2,32 @@ import axios from 'axios';
 import { getUserID } from './auth';
 import { MessageAttachment, Message } from './message';
 
-const backendURL = import.meta.env.DEV ? 'http://localhost:8081' : '/api';
+let backendURL = '/api';
 
-export const api = axios.create({
+export function setBackendUrl(url: string) {
+	backendURL = url
+}
+
+export function getBackendUrl() {
+	return backendURL
+}
+
+export function createAPI(backendURL: string) {
+	return axios.create({
 	baseURL: backendURL,
 	withCredentials: true
 });
+}
 
 export async function getPublicRooms() {
+	const api = createAPI(getBackendUrl())
 	const res = await api.get('/rooms');
 	const uid = getUserID();
 	const res2 = await api.get(`/users/${uid}/joined`);
-	const joinedRoomIDs = res2.data.map((roomUser) => roomUser.Room.id);
+	const joinedRoomIDs = res2.data.map((roomUser: any) => roomUser.Room.id);
 	const rooms = new Set();
 
-	res.data.map((room) => {
+	res.data.map((room: any) => {
 		if (joinedRoomIDs.includes(room.id)) {
 			return;
 		} else {
@@ -28,12 +39,14 @@ export async function getPublicRooms() {
 }
 
 export async function getJoinedRooms() {
+	const api = createAPI(getBackendUrl())
 	const uid = getUserID();
 	const res = await api.get(`/users/${uid}/joined`);
-	return res.data.map((roomUser) => roomUser.Room);
+	return res.data.map((roomUser: any) => roomUser.Room);
 }
 
 export async function joinRoom(roomID: number | string) {
+	const api = createAPI(getBackendUrl())
 	try {
 		await api.get(`/rooms/${roomID}/join`);
 		return 'joined';
@@ -43,10 +56,11 @@ export async function joinRoom(roomID: number | string) {
 }
 
 export async function loadInitialMessages(roomID: number) {
+	const api = createAPI(getBackendUrl())
 	try {
 		const res = await api.get(`/rooms/${roomID}/messages`);
 
-		return res.data.map((element) => {
+		return res.data.map((element: any) => {
 			return Message.fromJson(element);
 		});
 	} catch (err) {
@@ -56,7 +70,7 @@ export async function loadInitialMessages(roomID: number) {
 }
 
 export function createWebsocket() {
-	const ws = new WebSocket(backendURL + '/ws');
+	const ws = new WebSocket(getBackendUrl() + '/ws');
 	ws.addEventListener('open', () => {
 		return;
 	});
@@ -71,6 +85,7 @@ export function sendMessage(
 	roomID: number,
 	attachment?: MessageAttachment
 ) {
+	const api = createAPI(getBackendUrl())
 	api.get(`/rooms/${roomID}/me`).then((res) => {
 		const role = res.data.role;
 		console.log(res.data.role);
@@ -95,6 +110,7 @@ export function streamMessages(ws: WebSocket, callback: (message: Message) => vo
 }
 
 export async function getUserDetails(userID: number | string) {
+	const api = createAPI(getBackendUrl())
 	try {
 		const res = await api.get(`/users/${userID}`);
 		return res.data

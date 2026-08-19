@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { getUserID, getUsername } from '$lib/api/auth.js';
+	import { getUserID, getUsername } from 'belaberung-client-libs/auth';
 	import {
-		api,
+		createAPI, getBackendUrl,
 		createWebsocket,
 		loadInitialMessages,
 		sendMessage,
 		streamMessages
-	} from '$lib/api/core';
-	import { MessageAttachment, MessageAttachmentType, Message } from '$lib/api/message.js';
+	} from 'belaberung-client-libs';
+	import { MessageAttachment, MessageAttachmentType, Message } from 'belaberung-client-libs/message';
 	import MessageViewer from '$lib/components/MessageViewer.svelte';
 	import { Container, Row, Button, Form, Input } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
@@ -23,6 +23,7 @@
 	let miniProfileUserID = $state(0);
 
 	onMount(async () => {
+		const api = createAPI(getBackendUrl())
 		const tmpUsers = await api.get(`/rooms/${id}/users`);
 		users = tmpUsers.data;
 		const tmpMessages = await loadInitialMessages(id);

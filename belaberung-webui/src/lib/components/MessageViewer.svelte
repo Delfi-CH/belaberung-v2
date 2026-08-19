@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Message } from '$lib/api/message';
+	import type { Message } from 'belaberung-client-libs/message';
 	import MiniProfile from './MiniProfile.svelte';
 
 	let { messages } = $props();
@@ -28,7 +28,7 @@
 				miniProfileUserID = message.userId
 				miniProfileMessageIndex = index
 			}}
-			onkeydown={(e)=>{
+			onkeydown={()=>{
 				 
 			}}
 			role="button"

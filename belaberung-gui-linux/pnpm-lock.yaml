@@ -20,6 +20,9 @@ importers:
       axios:
         specifier: ^1.19.0
         version: 1.19.0
+      belaberung-client-libs:
+        specifier: link:../belaberung-client-libs
+        version: link:../belaberung-client-libs
       react:
         specifier: ^19.2.8
         version: 19.2.8

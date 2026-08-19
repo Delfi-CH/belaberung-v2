@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { getUserID, getUsername } from '$lib/api/auth';
-	import { api } from '$lib/api/core';
+	import { getUserID, getUsername } from 'belaberung-client-libs/auth';
+	import { createAPI, getBackendUrl } from 'belaberung-client-libs';
 	import ErrorNotification from '$lib/components/ErrorNotification.svelte';
 	import { Container, Row, Col, Button, Input, Form, Label } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
@@ -20,6 +20,7 @@
 	const uid = getUserID();
 
 	onMount(async () => {
+		const api = createAPI(getBackendUrl())
 		const res = await api.get('/users/' + uid);
 		user = res.data;
 		newBiography = user.biography;
@@ -27,6 +28,7 @@
 	});
 
 	async function saveUsername() {
+		const api = createAPI(getBackendUrl())
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'username',
@@ -40,6 +42,7 @@
 	}
 
 	async function savePassword() {
+		const api = createAPI(getBackendUrl())
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'password',
@@ -54,6 +57,7 @@
 	}
 
 	async function saveBiography() {
+		const api = createAPI(getBackendUrl())
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'biography',
@@ -66,6 +70,7 @@
 	}
 
 	async function savePronouns() {
+		const api = createAPI(getBackendUrl())
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'pronouns',

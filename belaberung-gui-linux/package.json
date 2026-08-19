@@ -22,6 +22,7 @@
         "@gtkx/react": "^1.2.0",
         "@gtkx/runtime": "^1.2.0",
         "axios": "^1.19.0",
+        "belaberung-client-libs": "link:../belaberung-client-libs",
         "react": "^19.2.8"
     },
     "devDependencies": {

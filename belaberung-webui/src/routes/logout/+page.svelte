@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { logout } from '$lib/api/auth';
+	import { logout } from 'belaberung-client-libs/auth';
 
 	let errorMessage = $state('');
 

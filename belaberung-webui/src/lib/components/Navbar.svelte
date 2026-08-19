@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Nav, Navbar, NavbarBrand, NavbarToggler, Collapse } from '@sveltestrap/sveltestrap';
 	import { page } from '$app/state';
-	import { getUsername, isLoggedIn } from '$lib/api/auth';
+	import { getUsername, isLoggedIn } from 'belaberung-client-libs/auth';
 	import NavbarInsides from './NavbarInsides.svelte';
 
 	let isUserLoggedIn = $state(false);

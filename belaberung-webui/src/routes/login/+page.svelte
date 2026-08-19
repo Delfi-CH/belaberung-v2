@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { login } from '$lib/api/auth';
+	import { login } from 'belaberung-client-libs/auth';
 	import Alert from '$lib/components/ErrorNotification.svelte';
 
 	let username = $state('');

@@ -1,0 +1,32 @@
+{
+  "name": "belaberung-client-libs",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --outDir dist -d true src/*.ts"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/core.js",
+      "types": "./dist/core.d.ts"
+    },
+    "./auth": {
+      "import": "./dist/auth.js",
+      "types": "./dist/auth.d.ts"
+    },
+    "./message": {
+      "import": "./dist/message.js",
+      "types": "./dist/message.d.ts"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "axios": "^1.19.0"
+  }
+}

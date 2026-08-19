@@ -5,6 +5,7 @@
 
 	let { children } = $props();
 	let theme = $state('zephyr');
+
 </script>
 
 <svelte:head>

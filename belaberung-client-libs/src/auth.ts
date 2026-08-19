@@ -1,7 +1,9 @@
-import { api } from './core';
+import { createAPI, getBackendUrl } from './core';
+
 import axios from 'axios';
 
 export async function isLoggedIn() {
+	const api = createAPI(getBackendUrl())
 	try {
 		await api.get('/auth/status');
 		return true;
@@ -34,6 +36,7 @@ export type LoginResult = [success: boolean, errormsg: string];
 
 export async function login(username: string, password: string): Promise<LoginResult> {
 	let errorMessage = '';
+	const api = createAPI(getBackendUrl())
 	try {
 		const res = await api.post('/auth/login', {
 			username: username,
@@ -65,6 +68,7 @@ export async function login(username: string, password: string): Promise<LoginRe
 
 export async function register(username: string, password: string): Promise<LoginResult> {
 	let errorMessage = '';
+	const api = createAPI(getBackendUrl())
 	try {
 		const res = await api.post('/auth/register', {
 			username: username,
@@ -95,6 +99,7 @@ export async function register(username: string, password: string): Promise<Logi
 }
 
 export async function logout() {
+	const api = createAPI(getBackendUrl())
 	try {
 		await api.get('/auth/logout');
 		localStorage.removeItem('username');
