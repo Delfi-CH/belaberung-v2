@@ -17,6 +17,7 @@
 	import { Container, Row, Button, Form, Input } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
 	import MiniProfile from '$lib/components/MiniProfile.svelte';
+	import { appendToRoomList } from '$lib/lastRoom';
 
 	let { data } = $props();
 	let messageContent = $state('');
@@ -37,6 +38,7 @@
 	});
 
 	onMount(() => {
+		appendToRoomList(data.post)
 		ws = createWebsocket();
 		streamMessages(ws, (message) => {
 			messages = [...messages, message];

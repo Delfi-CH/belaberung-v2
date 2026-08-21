@@ -38,23 +38,24 @@
 	}
 </script>
 
-<h1>new room</h1>
+
 
 <Container>
 	<Row>
 		<Col>
+			<h1>Create a room</h1>
 			<Form on:submit={async () => await handleSubmit()}>
 				<Label>Name</Label>
-				<Input type="text" bind:value={name}></Input>
+				<Input type="text" bind:value={name} required></Input>
 				<Label>Description</Label>
-				<Input type="text" bind:value={description}></Input>
+				<Input type="text" bind:value={description} required></Input>
 				<Label>Private</Label>
 				<Input type="checkbox" bind:checked={isPrivate}></Input>
 				{#if isPrivate}
 					<Label>Password</Label>
-					<Input type="password" bind:value={password}></Input>
+					<Input type="password" bind:value={password} required></Input>
 				{/if}
-				<Button type="submit">Create</Button>
+				<p style="margin-top: 1rem !important;"><Button type="submit" color="primary">Create</Button></p>
 			</Form>
 		</Col>
 	</Row>

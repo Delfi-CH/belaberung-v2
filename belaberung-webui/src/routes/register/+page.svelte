@@ -3,6 +3,8 @@
 	import { resolve } from '$app/paths';
 	import { register } from 'belaberung-client-libs/auth';
 	import Alert from '$lib/components/ErrorNotification.svelte';
+	import { resetRoomList } from '$lib/lastRoom';
+	import { Container, Row, Col, Form, Input, Label, Button } from '@sveltestrap/sveltestrap';
 
 	let username = $state('');
 	let password = $state('');
@@ -15,30 +17,34 @@
 		errorMessage = errorMessageRes;
 		showError = !doRedirect;
 		if (doRedirect) {
+			resetRoomList()
 			await goto(resolve('/'));
 		}
 	}
 </script>
 
-<div>
+<Container>
+	<Row>
+	<Col>
 	<h1>Register</h1>
-	<form onsubmit={async () => await handleSubmit()}>
-		<label for="username">Username</label><input
-			type="username"
+	<Form onsubmit={async () => await handleSubmit()}>
+		<Label for="username">Username</Label><Input
 			id="username"
 			required
 			bind:value={username}
 		/>
-		<label for="password">Password</label><input
+		<Label for="password">Password</Label><Input
 			type="password"
 			id="password"
 			required
 			bind:value={password}
 		/>
-		<button type="submit">Sign Up</button>
-		<p>Alreay have an account? Log in <a href={resolve('/login')}>here</a></p>
+		<p style="margin-top: 1em;"><Button type="submit" size="lg" color="primary">Sign Up</Button></p>
+		<p>Alreay have an account? Log in <a href={resolve('/login')}>here</a>.</p>
 
 		<Alert isVisible={showError} message={errorMessage} onDismiss={() => (showError = !showError)}
 		></Alert>
-	</form>
-</div>
+	</Form>
+	</Col>
+	</Row>
+</Container>
