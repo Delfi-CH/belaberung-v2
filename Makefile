@@ -1,3 +1,14 @@
+# Configuration
+
+MAKEFLAGS := --jobs=$(shell nproc)
+BACKEND_BINARY_NAME=belaberung-server
+GOFLAGS := -C belaberung-backend -race -v -work -x -compiler gc -asmflags=$(GO_ASMFLAGS) -gcflags=$(GO_GOCFLAGS) -gccgoflags=$(GO_GCCGOFLAGS) -ldflags=$(GO_LDFLAGS)
+GO_ASMFLAGS:=
+GO_GOCFLAGS:=
+GO_GCCGOFLAGS:=
+GO_LDFLAGS:=
+GO_CLEANFLAGS := -x -cache -testcache -modcache
+
 # Build every Target
 
 all: backend webui
@@ -7,9 +18,9 @@ docker: backend-docker webui-docker
 # Build the backend
 
 backend:
-	cd belaberung-backend && make build
+	go build $(GOFLAGS) -o bin/${BACKEND_BINARY_NAME}
 	mkdir --parents --verbose dist
-	cp --verbose belaberung-backend/bin/belaberung-server dist/
+	cp --verbose belaberung-backend/bin/${BACKEND_BINARY_NAME} dist/
 
 backend-docker: 
 	docker buildx build -f Dockerfiles/Dockerfile.backend belaberung-backend -t belaberung-backend:latest
@@ -33,14 +44,15 @@ webui-docker:
 webui-docker-rootless: 
 	docker buildx build -f Dockerfiles/Dockerfile.webui.rootless . -t belaberung-webui-rootless:latest
 
-# Clean the repository: remove downloaded libraries and build artifacts
+# Clean the repository: remove downloaded libraries and build artifacts, aswell as any files not in the git staging area
 
 clean: backend-clean client-libs-clean webui-clean
 	rm --recursive --force dist
+	git clean
 
 backend-clean: 
 	rm --recursive --force dist/belaberung-server
-	cd belaberung-backend && make clean
+	cd belaberung-backend && go clean $(GO_CLEANFLAGS)
 
 client-libs-clean:
 	rm --recursive --force belaberung-client-libs/dist belaberung-client-libs/node_modules dist/belaberung-client-libs
@@ -60,3 +72,23 @@ client-libs-prepare:
 
 webui-prepare:
 	cd belaberung-webui && pnpm install
+
+# Start Applications in development mode
+
+dev: backend-dev webui-dev
+
+backend-dev:
+	go run $(GOFLAGS) .
+
+webui-dev: client-libs
+	cd belaberung-webui && pnpm dev
+
+# Format the source code
+
+format: backend-format webui-format
+
+backend-format:
+	cd belaberung-backend && make format
+
+webui-format:
+	cd belaberung-webui && pnpm format
