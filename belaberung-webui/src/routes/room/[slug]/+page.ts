@@ -6,8 +6,10 @@ export const ssr = false;
 export const prerender = false;
 
 export async function load({ params }) {
-	if (import.meta.env.DEV) { setBackendUrl("http://localhost:8081") }
-	const api = createAPI(getBackendUrl())
+	if (import.meta.env.DEV) {
+		setBackendUrl('http://localhost:8081');
+	}
+	const api = createAPI(getBackendUrl());
 	if (await isLoggedIn()) {
 		try {
 			const res = await api.get('/rooms/' + params.slug);

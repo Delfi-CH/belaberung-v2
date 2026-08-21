@@ -21,7 +21,6 @@ type client struct {
 	rooms []int
 }
 
-
 func newClient(hub *Hub, conn *websocket.Conn) *client {
 	return &client{
 		hub: hub,
@@ -33,7 +32,6 @@ func newClient(hub *Hub, conn *websocket.Conn) *client {
 		rooms: make([]int, 0),
 	}
 }
-
 
 // readPump pumps messages from the websocket connection to the hub.
 //
@@ -49,13 +47,11 @@ func (c *client) readPump(db *bun.DB) {
 		c.conn.Close()
 	}()
 
-
 	c.conn.SetReadLimit(MaxMessageSize)
 
 	c.conn.SetReadDeadline(
 		time.Now().Add(PongWait),
 	)
-
 
 	c.conn.SetPongHandler(func(string) error {
 
@@ -65,7 +61,6 @@ func (c *client) readPump(db *bun.DB) {
 
 		return nil
 	})
-
 
 	for {
 
@@ -83,7 +78,6 @@ func (c *client) readPump(db *bun.DB) {
 
 			break
 		}
-
 
 		var message Message
 
@@ -115,7 +109,6 @@ func (c *client) readPump(db *bun.DB) {
 	}
 }
 
-
 // writePump pumps messages from the hub to the websocket connection.
 //
 // There must only ever be one writer for a websocket connection.
@@ -130,19 +123,15 @@ func (c *client) writePump() {
 		c.conn.Close()
 	}()
 
-
 	for {
 
 		select {
 
-
 		case message, ok := <-c.send:
-
 
 			c.conn.SetWriteDeadline(
 				time.Now().Add(WriteWait),
 			)
-
 
 			if !ok {
 
@@ -154,33 +143,26 @@ func (c *client) writePump() {
 				return
 			}
 
-
 			data, err := json.Marshal(message)
 
 			if err != nil {
 				continue
 			}
 
-
 			err = c.conn.WriteMessage(
 				websocket.TextMessage,
 				data,
 			)
 
-
 			if err != nil {
 				return
 			}
 
-
-
 		case <-ticker.C:
-
 
 			c.conn.SetWriteDeadline(
 				time.Now().Add(WriteWait),
 			)
-
 
 			if err := c.conn.WriteMessage(
 				websocket.PingMessage,
@@ -191,7 +173,6 @@ func (c *client) writePump() {
 		}
 	}
 }
-
 
 func (c *client) close() {
 

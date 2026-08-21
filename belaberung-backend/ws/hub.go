@@ -11,7 +11,6 @@ type Hub struct {
 	broadcast chan Message
 }
 
-
 type roomSubscription struct {
 	client *client
 	roomID int
@@ -28,7 +27,6 @@ func NewHub() *Hub {
 		broadcast: make(chan Message),
 	}
 }
-
 
 // Run starts the hub event loop.
 //
@@ -51,7 +49,6 @@ func (h *Hub) Run() {
 
 			clients[subscription.client] = true
 
-
 		case subscription := <-h.unregister:
 
 			if clients, exists := h.rooms[subscription.roomID]; exists {
@@ -68,7 +65,6 @@ func (h *Hub) Run() {
 					)
 				}
 			}
-
 
 		case message := <-h.broadcast:
 
@@ -106,7 +102,6 @@ func (h *Hub) Subscribe(
 	}
 }
 
-
 func (h *Hub) Unsubscribe(
 	client *client,
 	roomID int,
@@ -116,7 +111,6 @@ func (h *Hub) Unsubscribe(
 		roomID: roomID,
 	}
 }
-
 
 func (h *Hub) Broadcast(message Message) {
 	h.broadcast <- message

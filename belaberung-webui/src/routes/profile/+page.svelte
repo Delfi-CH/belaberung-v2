@@ -20,7 +20,7 @@
 	const uid = getUserID();
 
 	onMount(async () => {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		const res = await api.get('/users/' + uid);
 		user = res.data;
 		newBiography = user.biography;
@@ -28,7 +28,7 @@
 	});
 
 	async function saveUsername() {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'username',
@@ -42,7 +42,7 @@
 	}
 
 	async function savePassword() {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'password',
@@ -57,7 +57,7 @@
 	}
 
 	async function saveBiography() {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'biography',
@@ -70,7 +70,7 @@
 	}
 
 	async function savePronouns() {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		try {
 			await api.patch('/users/' + uid, {
 				type: 'pronouns',

@@ -5,8 +5,7 @@
 
 	let { children } = $props();
 	let theme = $state('zephyr');
-	const themeURLBase = import.meta.env.DEV ? "../../node_modules/bootswatch/dist/" : "/style/"
-
+	const themeURLBase = import.meta.env.DEV ? '../../node_modules/bootswatch/dist/' : '/style/';
 </script>
 
 <svelte:head>

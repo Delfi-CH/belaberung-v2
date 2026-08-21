@@ -10,7 +10,7 @@
 
 	async function handleSubmit() {
 		let data;
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		if (isPrivate && password != '') {
 			data = {
 				name: name,

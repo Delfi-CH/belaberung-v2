@@ -31,7 +31,6 @@ func Handler(hub *Hub, db *bun.DB) gin.HandlerFunc {
 			return
 		}
 
-
 		client := newClient(
 			hub,
 			conn,
@@ -72,7 +71,6 @@ func Handler(hub *Hub, db *bun.DB) gin.HandlerFunc {
 				roomID,
 			)
 		}
-
 
 		go client.writePump()
 

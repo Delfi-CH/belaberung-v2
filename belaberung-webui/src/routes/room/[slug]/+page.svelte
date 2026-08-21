@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { getUserID, getUsername } from 'belaberung-client-libs/auth';
 	import {
-		createAPI, getBackendUrl,
+		createAPI,
+		getBackendUrl,
 		createWebsocket,
 		loadInitialMessages,
 		sendMessage,
 		streamMessages
 	} from 'belaberung-client-libs';
-	import { MessageAttachment, MessageAttachmentType, Message } from 'belaberung-client-libs/message';
+	import {
+		MessageAttachment,
+		MessageAttachmentType,
+		Message
+	} from 'belaberung-client-libs/message';
 	import MessageViewer from '$lib/components/MessageViewer.svelte';
 	import { Container, Row, Button, Form, Input } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
@@ -23,7 +28,7 @@
 	let miniProfileUserID = $state(0);
 
 	onMount(async () => {
-		const api = createAPI(getBackendUrl())
+		const api = createAPI(getBackendUrl());
 		const tmpUsers = await api.get(`/rooms/${id}/users`);
 		users = tmpUsers.data;
 		const tmpMessages = await loadInitialMessages(id);
@@ -82,9 +87,9 @@
 							{user.User.username}
 						</li>
 						{#if showMiniProfile && user.role === 'Administrator' && user.User.id === miniProfileUserID}
-						<div style="position: relative;">
-							<MiniProfile userID={miniProfileUserID}></MiniProfile>
-						</div>
+							<div style="position: relative;">
+								<MiniProfile userID={miniProfileUserID}></MiniProfile>
+							</div>
 						{/if}
 					{/if}
 				{/each}
@@ -106,9 +111,9 @@
 							{user.User.username}
 						</li>
 						{#if showMiniProfile && user.role === 'Moderator' && user.User.id === miniProfileUserID}
-						<div style="position: relative;">
-							<MiniProfile userID={miniProfileUserID}></MiniProfile>
-						</div>
+							<div style="position: relative;">
+								<MiniProfile userID={miniProfileUserID}></MiniProfile>
+							</div>
 						{/if}
 					{/if}
 				{/each}
@@ -129,9 +134,9 @@
 							{user.User.username}
 						</li>
 						{#if showMiniProfile && user.role === 'Member' && user.User.id === miniProfileUserID}
-						<div style="position: relative;">
-							<MiniProfile userID={miniProfileUserID}></MiniProfile>
-						</div>
+							<div style="position: relative;">
+								<MiniProfile userID={miniProfileUserID}></MiniProfile>
+							</div>
 						{/if}
 					{/if}
 				{/each}
