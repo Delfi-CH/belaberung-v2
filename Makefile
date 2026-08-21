@@ -48,7 +48,7 @@ webui-docker-rootless:
 
 clean: backend-clean client-libs-clean webui-clean
 	rm --recursive --force dist
-	git clean
+	git clean --force
 
 backend-clean: 
 	rm --recursive --force dist/belaberung-server
