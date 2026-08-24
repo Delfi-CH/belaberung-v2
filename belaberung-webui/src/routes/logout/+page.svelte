@@ -10,7 +10,7 @@
 	onMount(async () => {
 		let ok = await logout();
 		if (ok) {
-			resetRoomList()
+			resetRoomList();
 			goto(resolve('/login'));
 		} else {
 			errorMessage = 'server error';

@@ -38,8 +38,6 @@
 	}
 </script>
 
-
-
 <Container>
 	<Row>
 		<Col>
@@ -55,7 +53,9 @@
 					<Label>Password</Label>
 					<Input type="password" bind:value={password} required></Input>
 				{/if}
-				<p style="margin-top: 1rem !important;"><Button type="submit" color="primary">Create</Button></p>
+				<p style="margin-top: 1rem !important;">
+					<Button type="submit" color="primary">Create</Button>
+				</p>
 			</Form>
 		</Col>
 	</Row>

@@ -17,7 +17,7 @@
 		errorMessage = errorMessageRes;
 		showError = !doRedirect;
 		if (doRedirect) {
-			resetRoomList()
+			resetRoomList();
 			await goto(resolve('/'));
 		}
 	}
@@ -25,26 +25,27 @@
 
 <Container>
 	<Row>
-	<Col>
-	<h1>Login</h1>
-	<Form onsubmit={async () => await handleSubmit()}>
-		<Label for="username">Username</Label><Input
-			id="username"
-			required
-			bind:value={username}
-		/>
-		<Label for="password">Password</Label><Input
-			type="password"
-			id="password"
-			required
-			bind:value={password}
-		/>
-		<p style="margin-top: 1em;"><Button type="submit" size="lg" color="primary">Login</Button></p>
-		<p>Dont have an account? Create one <a href={resolve('/register')}>here</a>.</p>
+		<Col>
+			<h1>Login</h1>
+			<Form onsubmit={async () => await handleSubmit()}>
+				<Label for="username">Username</Label><Input id="username" required bind:value={username} />
+				<Label for="password">Password</Label><Input
+					type="password"
+					id="password"
+					required
+					bind:value={password}
+				/>
+				<p style="margin-top: 1em;">
+					<Button type="submit" size="lg" color="primary">Login</Button>
+				</p>
+				<p>Dont have an account? Create one <a href={resolve('/register')}>here</a>.</p>
 
-		<Alert isVisible={showError} message={errorMessage} onDismiss={() => (showError = !showError)}
-		></Alert>
-	</Form>
-	</Col>
+				<Alert
+					isVisible={showError}
+					message={errorMessage}
+					onDismiss={() => (showError = !showError)}
+				></Alert>
+			</Form>
+		</Col>
 	</Row>
 </Container>

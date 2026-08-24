@@ -20,7 +20,7 @@
 	import { appendToRoomList } from '$lib/lastRoom';
 
 	let { data } = $props();
-	let password = $derived(data.password)
+	let password = $derived(data.password);
 	let messageContent = $state('');
 	let id = $derived(data.post.id);
 	let users = $state([]);
@@ -33,13 +33,13 @@
 		const api = createAPI(getBackendUrl());
 		const tmpUsers = await api.get(`/rooms/${id}/users?password=${password}`);
 		users = tmpUsers.data;
-		const tmpMessages = await loadInitialMessages(id, password ?? "");
+		const tmpMessages = await loadInitialMessages(id, password ?? '');
 		messages = [...messages, ...tmpMessages];
 		messages.sort((a, b) => a.timestamp - b.timestamp);
 	});
 
 	onMount(() => {
-		appendToRoomList(data.post)
+		appendToRoomList(data.post);
 		ws = createWebsocket();
 		streamMessages(ws, (message) => {
 			messages = [...messages, message];
@@ -57,7 +57,7 @@
 				<Input type="text" bind:value={messageContent} placeholder="Type your message here"></Input>
 				<Button
 					onclick={(e) => {
-						e.preventDefault()
+						e.preventDefault();
 						sendMessage(
 							ws,
 							messageContent,
@@ -65,7 +65,7 @@
 							Number(getUserID()),
 							id,
 							new MessageAttachment(MessageAttachmentType.None, null),
-							password ?? ""
+							password ?? ''
 						);
 						messageContent = '';
 					}}
