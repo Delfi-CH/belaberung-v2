@@ -20,6 +20,7 @@
 	import { appendToRoomList } from '$lib/lastRoom';
 
 	let { data } = $props();
+	let password = $derived(data.password)
 	let messageContent = $state('');
 	let id = $derived(data.post.id);
 	let users = $state([]);
@@ -30,9 +31,9 @@
 
 	onMount(async () => {
 		const api = createAPI(getBackendUrl());
-		const tmpUsers = await api.get(`/rooms/${id}/users`);
+		const tmpUsers = await api.get(`/rooms/${id}/users?password=${password}`);
 		users = tmpUsers.data;
-		const tmpMessages = await loadInitialMessages(id);
+		const tmpMessages = await loadInitialMessages(id, password ?? "");
 		messages = [...messages, ...tmpMessages];
 		messages.sort((a, b) => a.timestamp - b.timestamp);
 	});
@@ -55,14 +56,16 @@
 			<Form class="d-flex gap-2 align-items-center">
 				<Input type="text" bind:value={messageContent} placeholder="Type your message here"></Input>
 				<Button
-					onclick={() => {
+					onclick={(e) => {
+						e.preventDefault()
 						sendMessage(
 							ws,
 							messageContent,
 							getUsername(),
 							Number(getUserID()),
 							id,
-							new MessageAttachment(MessageAttachmentType.None, null)
+							new MessageAttachment(MessageAttachmentType.None, null),
+							password ?? ""
 						);
 						messageContent = '';
 					}}

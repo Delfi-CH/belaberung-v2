@@ -10,13 +10,18 @@
 		CardTitle,
 		CardBody,
 		CardFooter,
-		Button
+		Button,
+		Input,
+		Form,
+		Label
 	} from '@sveltestrap/sveltestrap';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
 	let rooms = $state([]);
 	let joinedRooms = $state([]);
+	let roomID = $state();
+	let roompass = $state('');
 
 	onMount(async () => {
 		const tmpRooms = await getPublicRooms();
@@ -27,7 +32,7 @@
 </script>
 
 <Container>
-	<h1>rooms</h1>
+	<h1>Rooms</h1>
 	<Row>
 		<h2>Joined</h2>
 		<Col>
@@ -38,14 +43,24 @@
 							<CardTitle>{room.name}</CardTitle>
 						</CardHeader>
 						<CardBody>
-							{room.description}
+							<p>{room.description}</p>
 						</CardBody>
 						<CardFooter>
-							<Button
-								onclick={() => {
-									goto(resolve('/room/' + String(room.id)));
-								}}>Goto</Button
-							>
+							<p>
+								<Button
+									onclick={() => {
+										if (room.private) {
+											goto(resolve('/room/' + String(room.id) + `?password=${roompass}`));
+										} else {
+											goto(resolve('/room/' + String(room.id)));
+										}
+									}}>Goto</Button
+								>
+							</p>
+							{#if room.private}
+								Password <Input type="password" label="Password" bind:value={roompass} id="password"
+								></Input>
+							{/if}
 						</CardFooter>
 					</Card>
 				{/each}
@@ -53,6 +68,26 @@
 				<p>You havent joined any rooms yet...</p>
 			{/if}
 		</Col>
+	</Row>
+	<Row>
+		<h2>Join a private room</h2>
+		<Form
+			onsubmit={async () => {
+				const err = await joinRoom(roomID, roompass);
+
+				if (err === 'joined') {
+					goto(resolve('/room/' + String(roomID) + `/?password=${roompass}`));
+				} else {
+					alert('An unexpected error ocurred!');
+				}
+			}}
+		>
+			<Label>RoomID</Label>
+			<Input type="number" bind:value={roomID}></Input>
+			<Label>Password</Label>
+			<Input type="password" bind:value={roompass}></Input>
+			<Button type="submit">Join</Button>
+		</Form>
 	</Row>
 	<Row>
 		<h2>Public Rooms</h2>

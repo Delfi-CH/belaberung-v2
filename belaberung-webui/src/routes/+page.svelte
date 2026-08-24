@@ -8,13 +8,15 @@
 		CardTitle,
 		CardBody,
 		CardFooter,
-		Button } from "@sveltestrap/sveltestrap";
+		Button,
+    Label, Input } from "@sveltestrap/sveltestrap";
     import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 
     let lastRooms = $state([])
     let joinedRooms = $state([])
     let username = $state("")
+    let roompass = $state("")
 
     onMount(()=>{
         lastRooms = getRoomList()
@@ -34,9 +36,12 @@
             <h2>Joined rooms</h2>
             <div>
             {#each joinedRooms as room, index (index)}
-					<span class="roomList"><Button color="success" href={resolve("/room/"+room.id)}>{room.name}</Button></span>     
+					<span class="roomList"><Button color="success" onclick={()=>{
+										goto(resolve('/room/' + String(room.id) + `?password=${roompass}`));
+                    }}>{room.name}</Button></span>     
 				{/each}
                 </div>
+            Password <Input type="password" label="Password" bind:value={roompass} id="password"></Input>
             <h2>Options</h2>
             <Button href={resolve("/rooms/new")} color="info" size="lg">Create a Room</Button>
             <Button href={resolve("/profile")} color="info" size="lg">Edit your Profile</Button>
@@ -53,11 +58,20 @@
 							{room.description}
 						</CardBody>
 						<CardFooter>
+                        <p>
 							<Button
 								onclick={() => {
-									goto(resolve('/room/' + String(room.id)));
+									if (room.private) {
+										goto(resolve('/room/' + String(room.id) + `?password=${roompass}`));
+									} else {
+										goto(resolve('/room/' + String(room.id)))
+									}
 								}}>Goto</Button
 							>
+                            </p>
+                            {#if room.private}
+                            Password <Input type="password" label="Password" bind:value={roompass} id="password"></Input>
+                            {/if}
 						</CardFooter>
 					</Card>
 				{/each}

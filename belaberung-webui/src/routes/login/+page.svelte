@@ -26,7 +26,7 @@
 <Container>
 	<Row>
 	<Col>
-	<h1>Register</h1>
+	<h1>Login</h1>
 	<Form onsubmit={async () => await handleSubmit()}>
 		<Label for="username">Username</Label><Input
 			id="username"

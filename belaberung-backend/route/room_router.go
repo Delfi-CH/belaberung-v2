@@ -215,6 +215,23 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 			return
 		}
 
+		password := c.Query("password")
+		var room *model.Room
+		if password == "" {
+			room, err = model.GetRoomById(context.Background(), db, id)
+		} else {
+			room, err = model.GetPrivateRoomById(context.Background(), db, id, password)
+		}
+
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		if room == nil {
+			c.String(http.StatusNotFound, "room not found")
+			return
+		}
+
 		limit := 50
 		position := 0
 
@@ -251,6 +268,23 @@ func InitRoomRouter(router *gin.RouterGroup, db *bun.DB) {
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		password := c.Query("password")
+		var room *model.Room
+		if password == "" {
+			room, err = model.GetRoomById(context.Background(), db, id)
+		} else {
+			room, err = model.GetPrivateRoomById(context.Background(), db, id, password)
+		}
+
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		if room == nil {
+			c.String(http.StatusNotFound, "room not found")
 			return
 		}
 

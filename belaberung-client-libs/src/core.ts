@@ -48,20 +48,20 @@ export async function getJoinedRooms() {
 	return res.data.map((roomUser: any) => roomUser.Room);
 }
 
-export async function joinRoom(roomID: number | string) {
+export async function joinRoom(roomID: number | string, password?: string) {
 	const api = createAPI(getBackendUrl())
 	try {
-		await api.get(`/rooms/${roomID}/join`);
+		await api.get(`/rooms/${roomID}/join?password=${password}`);
 		return 'joined';
 	} catch (err) {
 		return 'error: ' + err;
 	}
 }
 
-export async function loadInitialMessages(roomID: number) {
+export async function loadInitialMessages(roomID: number, password: string = "") {
 	const api = createAPI(getBackendUrl())
 	try {
-		const res = await api.get(`/rooms/${roomID}/messages`);
+		const res = await api.get(`/rooms/${roomID}/messages?password=${password}`);
 
 		return res.data.map((element: any) => {
 			return Message.fromJson(element);
@@ -86,10 +86,11 @@ export function sendMessage(
 	username: string,
 	userID: number,
 	roomID: number,
-	attachment?: MessageAttachment
+	attachment?: MessageAttachment,
+	password: string = ""
 ) {
 	const api = createAPI(getBackendUrl())
-	api.get(`/rooms/${roomID}/me`).then((res) => {
+	api.get(`/rooms/${roomID}/me?password=${password}`).then((res) => {
 		const role = res.data.role;
 		console.log(res.data.role);
 		const msg = new Message({
