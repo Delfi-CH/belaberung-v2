@@ -1,0 +1,10 @@
+[Unit]
+Description=Belaberung Backend
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/belaberung-server-enviroment
+ExecStart=/usr/bin/belaberung-server
+
+[Install]
+WantedBy=multi-user.target
