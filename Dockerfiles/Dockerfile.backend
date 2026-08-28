@@ -10,7 +10,7 @@ COPY . .
 
 ENV GIN_MODE=release
 
-RUN make
+RUN make docker
 
 # Run the built binary
 

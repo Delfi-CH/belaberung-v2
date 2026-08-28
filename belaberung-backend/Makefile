@@ -1,5 +1,6 @@
 BINARY_NAME=bin/belaberung-server
 GOFLAGS :=  -race -v -work -x -compiler gc -asmflags=$(GO_ASMFLAGS) -gcflags=$(GO_GOCFLAGS) -gccgoflags=$(GO_GCCGOFLAGS) -ldflags=$(GO_LDFLAGS)
+GOFLAGS_DOCKER := -compiler gc -asmflags=$(GO_ASMFLAGS) -gcflags=$(GO_GOCFLAGS) -gccgoflags=$(GO_GCCGOFLAGS) -ldflags=$(GO_LDFLAGS)
 GO_ASMFLAGS :=
 GO_GOCFLAGS :=
 GO_GCCGOFLAGS :=
@@ -11,6 +12,9 @@ all: build
 
 build:
 	go build $(GOFLAGS) -o bin/${BINARY_NAME} .
+
+docker: 
+	go build $(GOFLAGS_DOCKER) -o bin/${BINARY_NAME} .
 
 run: 
 	go run $(GOFLAGS) .
