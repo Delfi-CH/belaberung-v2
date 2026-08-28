@@ -7,7 +7,8 @@ MAKEFLAGS := --jobs=$(shell nproc)
 # Backend Configuration
 
 BACKEND_BINARY_NAME=belaberung-server
-GOFLAGS := -C belaberung-backend -race -v -work -x -compiler gc -asmflags=$(GO_ASMFLAGS) -gcflags=$(GO_GOCFLAGS) -gccgoflags=$(GO_GCCGOFLAGS) -ldflags=$(GO_LDFLAGS)
+GOFLAGS := -C belaberung-backend -race -v -work -x -compiler gc -gcflags=$(GO_GOCFLAGS) -ldflags=$(GO_LDFLAGS)
+GOFLAGS_GCCGO := -C belaberung-backend -race -v -work -x -compiler gccgo -asmflags=$(GO_ASMFLAGS) -gccgoflags=$(GO_GCCGOFLAGS) -ldflags=$(GO_LDFLAGS)
 GO_ASMFLAGS:=
 GO_GOCFLAGS:=
 GO_GCCGOFLAGS:=
@@ -29,6 +30,9 @@ TMPDIR=/tmp
 SYSTEMD_SERVICE_DIR=$(LIBDIR)/systemd/system/
 
 OUTDIR=./dist
+OUTDIR_BACKEND=$(OUTDIR)/backend
+OUTDIR_WEBUI=$(OUTDIR)/webui
+OUTDIR_CLIENT_LIBS=$(OUTDIR)/client-libs
 
 # WebUI Configuration
 
@@ -44,10 +48,10 @@ docker: backend-docker webui-docker
 
 backend:
 	go build $(GOFLAGS) -o bin/${BACKEND_BINARY_NAME}
-	mkdir --parents --verbose $(OUTDIR)
-	cp --verbose belaberung-backend/bin/${BACKEND_BINARY_NAME} $(OUTDIR)/
-	cp --verbose belaberung-backend/belaberung-backend.service $(OUTDIR)/
-	cp --verbose belaberung-backend/.env.example $(OUTDIR)/belaberung-server-enviroment
+	mkdir --parents --verbose $(OUTDIR_BACKEND)
+	cp --verbose belaberung-backend/bin/${BACKEND_BINARY_NAME} $(OUTDIR_BACKEND)/
+	cp --verbose belaberung-backend/belaberung-backend.service $(OUTDIR_BACKEND)/
+	cp --verbose belaberung-backend/.env.example $(OUTDIR_BACKEND)/belaberung-server-enviroment
 
 backend-docker: 
 	docker buildx build -f Dockerfiles/Dockerfile.backend belaberung-backend -t belaberung-backend:latest
@@ -56,16 +60,16 @@ backend-docker:
 
 client-libs:
 	cd belaberung-client-libs && pnpm build
-	mkdir --parents --verbose $(OUTDIR)
-	cp --verbose --recursive belaberung-client-libs $(OUTDIR)/client-libs
+	mkdir --parents --verbose $(OUTDIR_CLIENT_LIBS)
+	cp --verbose --recursive belaberung-client-libs/* $(OUTDIR_CLIENT_LIBS)/
 
 # Build the static WebUI
 
 webui: client-libs
 	cd belaberung-webui && pnpm build
-	mkdir --parents --verbose $(OUTDIR)
-	cp --recursive --verbose belaberung-webui/build $(OUTDIR)/www
-	cp --verbose belaberung-webui/nginx.conf $(OUTDIR)/nginx.conf
+	mkdir --parents --verbose $(OUTDIR_WEBUI)
+	cp --recursive --verbose belaberung-webui/build $(OUTDIR_WEBUI)/www
+	cp --verbose belaberung-webui/nginx.conf $(OUTDIR_WEBUI)/nginx.conf
 
 webui-docker:
 	docker buildx build -f Dockerfiles/Dockerfile.webui . -t belaberung-webui:latest
@@ -80,14 +84,14 @@ clean: backend-clean client-libs-clean webui-clean
 	git clean --force
 
 backend-clean: 
-	rm --recursive --force dist/belaberung-server
+	rm --recursive --force $(OUTDIR_BACKEND)
 	cd belaberung-backend && go clean $(GO_CLEANFLAGS)
 
 client-libs-clean:
-	rm --recursive --force belaberung-client-libs/dist belaberung-client-libs/node_modules $(OUTDIR)/belaberung-client-libs
+	rm --recursive --force belaberung-client-libs/dist belaberung-client-libs/node_modules $(OUTDIR_CLIENT_LIBS)/belaberung-client-libs
  
 webui-clean:
-	rm --recursive --force belaberung-webui/build belaberung-webui/node_modules $(OUTDIR)/www
+	rm --recursive --force belaberung-webui/build belaberung-webui/node_modules $(OUTDIR_WEBUI)/www
 
 # Install all dependencies
 
@@ -130,18 +134,18 @@ backend-install:
 	install -d $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(SYSTEMD_SERVICE_DIR)
 	install -d $(DESTDIR)$(CONFIGDIR)
-	install -m 755 $(OUTDIR)/$(BACKEND_BINARY_NAME) $(DESTDIR)$(BINDIR)/$(BACKEND_BINARY_NAME)
-	install -m 644 $(OUTDIR)/belaberung-backend.service $(DESTDIR)$(SYSTEMD_SERVICE_DIR)/belaberung-backend.service
-	install -m 600 $(OUTDIR)/belaberung-server-enviroment $(DESTDIR)$(CONFIGDIR)/belaberung-server-enviroment
+	install -m 755 $(OUTDIR_BACKEND)/$(BACKEND_BINARY_NAME) $(DESTDIR)$(BINDIR)/$(BACKEND_BINARY_NAME)
+	install -m 644 $(OUTDIR_BACKEND)/belaberung-backend.service $(DESTDIR)$(SYSTEMD_SERVICE_DIR)/belaberung-backend.service
+	install -m 600 $(OUTDIR_BACKEND)/belaberung-server-enviroment $(DESTDIR)$(CONFIGDIR)/belaberung-server-enviroment
 
 webui-install:
 	install -d $(DESTDIR)$(WEBDIR)
 	install -d $(DESTDIR)$(CONFIGDIR)/nginx/conf.d
-	cp $(OUTDIR)/nginx.conf $(TMPDIR)/nginx.conf.template
+	cp $(OUTDIR_WEBUI)/nginx.conf $(TMPDIR)/nginx.conf.template
 	BELABERUNG_WEBUI_PORT=80 \
 	BELABERUNG_WEBUI_BACKEND_HOST='http://localhost:8081/' \
 	BELABERUNG_WEBUI_SERVER_NAME='$(BELABERUNG_DOMAIN)' \
 	BELABERUNG_WEBUI_ROOT='$(WEBDIR)' \
 	envsubst '$${BELABERUNG_WEBUI_PORT} $${BELABERUNG_WEBUI_BACKEND_HOST} $${BELABERUNG_WEBUI_SERVER_NAME} $${BELABERUNG_WEBUI_ROOT}' < $(TMPDIR)/nginx.conf.template > $(TMPDIR)/nginx.conf
 	install -m 644 $(TMPDIR)/nginx.conf $(DESTDIR)$(CONFIGDIR)/nginx/conf.d/default.conf
-	cp --recursive --verbose $(OUTDIR)/www/* $(DESTDIR)$(WEBDIR)/
+	cp --recursive --verbose $(OUTDIR_WEBUI)/www/* $(DESTDIR)$(WEBDIR)/
