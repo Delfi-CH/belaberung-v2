@@ -1,3 +1,5 @@
+ARG BELABERUNG_DOMAIN
+
 # Build the client libraries
 
 FROM node:alpine AS libraries
@@ -32,10 +34,14 @@ RUN pnpm build
 
 FROM nginx:latest AS production
 
+ARG BELABERUNG_DOMAIN
+
+ENV BELABERUNG_DOMAIN=$BELABERUNG_DOMAIN
+
 COPY --from=builder /app/build /usr/share/nginx/html
 
-COPY --from=builder /app/nginx.conf.rootless /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/nginx.conf /nginx.conf.template 
 
 EXPOSE 8080
 
-CMD [ "nginx", "-g", "daemon off;" ]
+CMD ["/bin/sh" , "-c" , "envsubst '$BELABERUNG_WEBUI_PORT $BELABERUNG_WEBUI_BACKEND_HOST $BELABERUNG_WEBUI_SERVER_NAME $BELABERUNG_WEBUI_ROOT' < /nginx.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]

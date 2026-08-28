@@ -74,8 +74,16 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfiles/Dockerfile.webui # or ./Dockerfiles/Dockerfile.webui.rootless for rootless builds
+      args:
+        - BELABERUNG_DOMAIN=${BELABERUNG_DOMAIN}
     container_name: belaberung-webui
     restart: unless-stopped
+    environment:
+      - BELABERUNG_WEBUI_PORT=${BELABERUNG_WEBUI_PORT}
+      - BELABERUNG_WEBUI_BACKEND_HOST=${BELABERUNG_WEBUI_BACKEND_HOST}
+      - BELABERUNG_WEBUI_SERVER_NAME=${BELABERUNG_WEBUI_SERVER_NAME}
+      - BELABERUNG_WEBUI_ROOT=${BELABERUNG_WEBUI_ROOT}
+      - BELABERUNG_DOMAIN=${BELABERUNG_DOMAIN}
     ports:
       - 80:80
     # - 8080:8080 for rootless builds
