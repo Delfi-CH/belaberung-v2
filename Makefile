@@ -29,7 +29,7 @@ backend-docker:
 
 client-libs:
 	cd belaberung-client-libs && pnpm build
-	cp --verbose --recursive belaberung-client-libs dist/
+	cp --verbose --recursive belaberung-client-libs dist/client-libs
 
 # Build the static WebUI
 
