@@ -1,0 +1,18 @@
+{
+  "desktop": {
+    "app": {
+      "name": "Belaberung Desktop",
+      "identifier": "dev.delfi.belaberung-gui",
+      "deepLinks": ["belaberung"]
+    }, 
+    "backend": "webview",
+    "output": {
+      "windows": "./dist/belaberung.msi",
+      "macos": "./dist/belaberung.app",
+      "linux": "./dist/belaberung"
+    }
+  },
+  "imports": {
+    "@std/http": "jsr:@std/http@^1.1.3"
+  }
+}
