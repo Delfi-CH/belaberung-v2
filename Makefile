@@ -145,7 +145,7 @@ backend-format:
 webui-format:
 	cd belaberung-webui && pnpm format
 
-desktop-prepare: 
+desktop-format: 
 	cd belaberung-gui-desktop && pnpm format
 
 # Install the files
