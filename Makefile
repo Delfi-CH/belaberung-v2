@@ -33,6 +33,7 @@ OUTDIR=./dist
 OUTDIR_BACKEND=$(OUTDIR)/backend
 OUTDIR_WEBUI=$(OUTDIR)/webui
 OUTDIR_CLIENT_LIBS=$(OUTDIR)/client-libs
+OUTDIR_DESKTOP=$(OUTDIR)/desktop
 
 # WebUI Configuration
 
@@ -40,7 +41,7 @@ BELABERUNG_DOMAIN=chat.example.com
 
 # Build every Target
 
-all: backend webui
+all: backend client-libs webui desktop 
 
 docker: backend-docker webui-docker
 
@@ -77,9 +78,21 @@ webui-docker:
 webui-docker-rootless: 
 	docker buildx build -f Dockerfiles/Dockerfile.webui.rootless . -t belaberung-webui-rootless:latest
 
+# Build the desktop app
+
+desktop:
+	cd belaberung-gui-desktop && deno task desktop
+	mkdir --parents --verbose $(OUTDIR_DESKTOP)/belaberung
+	cp --recursive --verbose belaberung-gui-desktop/dist/belaberung/* $(OUTDIR_DESKTOP)/belaberung/
+
+desktop-appimage:
+	cd belaberung-gui-desktop && deno task appimage
+	mkdir --parents --verbose $(OUTDIR_DESKTOP)/
+	cp --recursive --verbose belaberung-gui-desktop/dist/*.AppImage $(OUTDIR_DESKTOP)/
+
 # Clean the repository: remove downloaded libraries and build artifacts, aswell as any files not in the git staging area
 
-clean: backend-clean client-libs-clean webui-clean
+clean: backend-clean client-libs-clean webui-clean desktop-clean
 	rm --recursive --force $(OUTDIR)
 	git clean --force
 
@@ -93,9 +106,12 @@ client-libs-clean:
 webui-clean:
 	rm --recursive --force belaberung-webui/build belaberung-webui/node_modules $(OUTDIR_WEBUI)/www
 
+desktop-clean:
+	rm --recursive --force belaberung-gui-desktop/build belaberung-gui-desktop/dist belaberung-gui-desktop/node_modules $(OUTDIR_DESKTOP)
+
 # Install all dependencies
 
-prepare: backend-prepare client-libs-prepare webui-prepare
+prepare: backend-prepare client-libs-prepare webui-prepare desktop-prepare
 
 backend-prepare:
 	cd belaberung-backend && go install
@@ -105,6 +121,9 @@ client-libs-prepare:
 
 webui-prepare:
 	cd belaberung-webui && pnpm install
+
+desktop-prepare: 
+	cd belaberung-gui-desktop && pnpm install && deno install
 
 # Start Applications in development mode
 
@@ -118,13 +137,16 @@ webui-dev: client-libs
 
 # Format the source code
 
-format: backend-format webui-format
+format: backend-format webui-format desktop-format
 
 backend-format:
 	cd belaberung-backend && make format
 
 webui-format:
 	cd belaberung-webui && pnpm format
+
+desktop-prepare: 
+	cd belaberung-gui-desktop && pnpm format
 
 # Install the files
 
